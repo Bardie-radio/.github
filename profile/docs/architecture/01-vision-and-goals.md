@@ -25,10 +25,10 @@ Bardie lets friends listen to music together **without** proprietary streaming s
 ## Goals
 
 1. **Modular** — swap audio sources and auth providers via containers
-2. **Broadcast** — radio-style shared experience per Struna
-3. **Self-hosted** — full control on your infrastructure
+2. **Broadcast** — radio-style shared experience per Struna (stream)
+3. **Self-hosted** — you own the stack on your infrastructure
 4. **Player-friendly** — ICY HTTP URLs for VLC, VRChat, browsers
-5. **Observable** — every module emits telemetry; end-to-end traces
+5. **Observable** — every module emits OTLP; end-to-end traces
 
 ## Non-goals (MVP)
 
@@ -37,5 +37,7 @@ Bardie lets friends listen to music together **without** proprietary streaming s
 - Public anonymous DJ (no public control plane)
 
 **Deep dive:** [bardie-kithara architecture docs](https://github.com/Bardie-radio/bardie-kithara/tree/main/docs/architecture)
+
+**Related:** [05-deployment](05-deployment.md) · [glossary (kithara)](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/glossary.md)
 
 **Read next:** [02-ecosystem-context.md](02-ecosystem-context.md)

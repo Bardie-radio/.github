@@ -6,6 +6,6 @@ sequenceDiagram
 
   DJ->>Plume: /player/friday-jazz
   Plume->>Kithara: POST /api/streams/id/play
-  Kithara->>YT: CreateInstance
-  YT-->>Kithara: socketPath
+  Kithara->>YT: start playback
+  YT-->>Kithara: audio ready
   Kithara-->>Plume: now playing

@@ -1,35 +1,27 @@
 flowchart TB
   subgraph client [Client modules]
-    Plume[Plume (Web UI)]
+    Plume["Plume (Web UI)"]
     Discord[Discord bot]
     Telegram[Telegram bot]
   end
   subgraph listen [Listen]
     Players[Players]
   end
-  subgraph core [Kithara]
-    API[REST API]
-    Neck[Neck (Encoder)]
-    StreamSrv[Stream Server]
-    AuthOrch[Auth Orchestrator]
-  end
-  subgraph modules [Backend modules]
+  subgraph backend [Kithara backend]
+    KitharaBox[Kithara]
     src[source-modules]
     auth[auth-modules]
+    KitharaBox --- src
+    KitharaBox --- auth
   end
   subgraph observe [Observability]
     OTel[OTel]
   end
-  Plume --> API
-  Discord --> API
-  Discord --> StreamSrv
-  Telegram --> API
-  Plume --> StreamSrv
-  Players --> StreamSrv
-  API --> Neck
-  API --> AuthOrch
-  Neck --> src
-  AuthOrch --> auth
-  core --> OTel
-  modules --> OTel
+  Plume --> KitharaBox
+  Discord --> KitharaBox
+  Telegram --> KitharaBox
+  Plume -->|ICY stream| KitharaBox
+  Players -->|ICY stream| KitharaBox
+  Discord -->|ICY stream| KitharaBox
+  backend --> OTel
   client --> OTel

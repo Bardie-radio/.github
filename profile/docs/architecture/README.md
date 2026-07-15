@@ -34,7 +34,7 @@ flowchart TB
 | 2 | [Ecosystem context](02-ecosystem-context.md) | 2 min |
 | 3 | [Component landscape](03-component-landscape.md) | 3 min |
 | 4 | [User journeys](04-user-journeys.md) | 3 min |
-| 5 | [Deployment](05-deployment.md) | 2 min |
+| 5 | [Deployment](05-deployment.md) | 3 min — whole-stack process; per-container detail in each repo |
 
 
 ## Repositories
@@ -43,6 +43,6 @@ flowchart TB
 |------|------|
 | [bardie-kithara](https://github.com/Bardie-radio/bardie-kithara) | Core backend |
 | [bardie-plume](https://github.com/Bardie-radio/bardie-plume) | Web UI |
-| [bardie-auth-local](https://github.com/Bardie-radio) | Login+password adapter (MVP) |
+| — | Login+password auth adapter (MVP) — module and repo name undecided |
 
 **Read next:** [01-vision-and-goals.md](01-vision-and-goals.md)

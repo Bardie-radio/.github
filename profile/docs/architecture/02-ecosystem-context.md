@@ -25,7 +25,9 @@ Bardie sits between **DJs** (stream owners), **listeners** (tune in anywhere), a
 |-----------|------------|
 | Core | [bardie-kithara](https://github.com/Bardie-radio/bardie-kithara) |
 | Web UI | [bardie-plume](https://github.com/Bardie-radio/bardie-plume) |
-| Local Auth (MVP) | Local auth module (TBD repo name) |
-| Youtube Source (MVP) | YouTube module (TBD repo name) |
+| Login+password auth (MVP) | Module and repo name undecided *(planned)* |
+| YouTube Source (MVP) | Module and repo name undecided *(planned)* |
+
+**Related:** [org hub](README.md) · [kithara architecture](https://github.com/Bardie-radio/bardie-kithara/tree/main/docs/architecture)
 
 **Read next:** [03-component-landscape.md](03-component-landscape.md)

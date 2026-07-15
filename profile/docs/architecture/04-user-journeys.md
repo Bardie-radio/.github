@@ -1,5 +1,7 @@
 # User Journeys
 
+How listeners, DJs, and login flow across Plume, Kithara, and modules. Protocol detail and instance contracts live in kithara docs.
+
 ## Listen (public stream)
 
 <!-- mermaid-source: diagrams/journey-listen.mmd -->
@@ -28,8 +30,8 @@ sequenceDiagram
 
   DJ->>Plume: /player/friday-jazz
   Plume->>Kithara: POST /api/streams/id/play
-  Kithara->>YT: CreateInstance
-  YT-->>Kithara: socketPath
+  Kithara->>YT: start playback
+  YT-->>Kithara: audio ready
   Kithara-->>Plume: now playing
 ```
 
@@ -41,7 +43,7 @@ sequenceDiagram
   participant User
   participant Plume
   participant Kithara
-  participant Auth as auth-local
+  participant Auth as Auth adapter MVP
 
   User->>Plume: Open /
   Plume->>Kithara: GET /api/auth/discovery
@@ -54,7 +56,8 @@ sequenceDiagram
 
 Source diagrams: [diagrams/](diagrams/)
 
-**Kithara journeys:** [domains/clients.md](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md)
+**Kithara journeys:** [domains/clients.md](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md) · [source-instances](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/source-instances.md) · [grpc-source-module](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/grpc-source-module.md)
+
+**Related:** [uri-routing](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [03-component-landscape](03-component-landscape.md)
 
 **Read next:** [05-deployment.md](05-deployment.md)
-
