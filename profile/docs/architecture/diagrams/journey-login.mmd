@@ -2,7 +2,7 @@ sequenceDiagram
   participant User
   participant Plume
   participant Kithara
-  participant Auth as auth-local
+  participant Auth as Auth adapter MVP
 
   User->>Plume: Open /
   Plume->>Kithara: GET /api/auth/discovery

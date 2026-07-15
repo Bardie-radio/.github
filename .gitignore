@@ -1,3 +1,33 @@
 # Ephemeral output from scripts/mermaid-sync/check.mjs (local or CI workspace)
 conflicts.json
 pr-comment.md
+
+# Node (mermaid-sync scripts; keep ignored if deps are added later)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm/
+coverage/
+.nyc_output/
+
+# Ignore all hidden files and folders (except tracked git / GitHub meta)
+.*
+!.gitignore
+!.gitattributes
+!.gitmodules
+!.github/
+
+# Env and local secrets
+.env
+.env.*
+*.env
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

@@ -43,6 +43,6 @@ flowchart TB
 |------|------|
 | [bardie-kithara](https://github.com/Bardie-radio/bardie-kithara) | Core backend |
 | [bardie-plume](https://github.com/Bardie-radio/bardie-plume) | Web UI |
-| [bardie-auth-local](https://github.com/Bardie-radio) | Login+password adapter (MVP) |
+| — | Login+password auth adapter (MVP) — module and repo name undecided |
 
 **Read next:** [01-vision-and-goals.md](01-vision-and-goals.md)

@@ -3,10 +3,10 @@ flowchart TB
     P[Reverse Proxy]
   end
   subgraph apps [App stack MVP]
-    Plume[plume]
-    Kithara[kithara]
-    YT[youtube-module]
-    Auth[auth-local]
+    Plume[bardie_plume]
+    Kithara[bardie_kithara]
+    YT[bardie_youtube]
+    Auth["auth adapter (MVP)"]
   end
   subgraph observe [Observability]
     OTel[otel-collector]
