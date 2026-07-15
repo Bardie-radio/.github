@@ -1,0 +1,13 @@
+sequenceDiagram
+  participant User
+  participant Plume
+  participant Kithara
+  participant Auth as auth-local
+
+  User->>Plume: Open /
+  Plume->>Kithara: GET /api/auth/discovery
+  Kithara->>Plume: auth_providers.json
+  Plume->>User: Auth selection and forms
+  User->>Plume: Submit auth form
+  Plume->>Auth: Authenticate
+  Auth-->>Plume: token

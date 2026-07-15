@@ -7,15 +7,18 @@
 sequenceDiagram
   participant Listener
   participant Player as VLC
-  participant Kithara
+  participant Kithara as Kithara Stream Server
 
-  Listener->>Player: Open URL stream/lofi
+  Listener->>Player: Paste bardie.example/stream/lofi
   Player->>Kithara: GET /stream/lofi
-  Kithara-->>Player: ICY audio + StreamTitle
+  loop ICY stream
+    Kithara-->>Player: audio + StreamTitle metadata
+  end
 ```
 
 ## DJ: search and play
 
+<!-- mermaid-source: diagrams/journey-dj-play.mmd -->
 ```mermaid
 sequenceDiagram
   participant DJ
@@ -32,6 +35,7 @@ sequenceDiagram
 
 ## Login (MVP)
 
+<!-- mermaid-source: diagrams/journey-login.mmd -->
 ```mermaid
 sequenceDiagram
   participant User
@@ -52,4 +56,5 @@ Source diagrams: [diagrams/](diagrams/)
 
 **Kithara journeys:** [domains/clients.md](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md)
 
-**Read next:** [README.md](README.md)
+**Read next:** [05-deployment.md](05-deployment.md)
+

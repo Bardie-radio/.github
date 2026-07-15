@@ -1,0 +1,18 @@
+flowchart TB
+  subgraph bardie [Bardie Ecosystem]
+    Kithara[Kithara]
+    Plume[Plume UI]
+    SrcMod[Source Modules]
+    AuthMod[Auth Adapters]
+  end
+  subgraph external [External]
+    Players[Network capable player]
+    IdP[OIDC]
+    OTel[OTel compatible consumer]
+  end
+  Plume --> Kithara
+  SrcMod -->|gRPC| Kithara
+  AuthMod -->|gRPC| Kithara
+  Players -->|/stream/slug| Kithara
+  Plume -.-> IdP
+  bardie --> OTel

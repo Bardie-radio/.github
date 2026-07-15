@@ -1,5 +1,6 @@
 # Vision and Goals
 
+<!-- mermaid-source: diagrams/vision-and-goals.mmd -->
 ```mermaid
 mindmap
   root((Bardie))

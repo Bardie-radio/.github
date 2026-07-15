@@ -1,5 +1,6 @@
 # Bardie Architecture (Org Overview)
 
+<!-- mermaid-source: diagrams/overview.mmd -->
 ```mermaid
 flowchart TB
   subgraph bardie [Bardie Ecosystem]
@@ -33,14 +34,8 @@ flowchart TB
 | 2 | [Ecosystem context](02-ecosystem-context.md) | 2 min |
 | 3 | [Component landscape](03-component-landscape.md) | 3 min |
 | 4 | [User journeys](04-user-journeys.md) | 3 min |
+| 5 | [Deployment](05-deployment.md) | 2 min |
 
-## Diagrams
-
-Paired `.md` embeds and `.mmd` sources are kept in sync by [Mermaid parity CI](../mermaid-sync.md).
-
-- [ecosystem-context.mmd](diagrams/ecosystem-context.mmd)
-- [deployment-compose.mmd](diagrams/deployment-compose.mmd)
-- [journey-listen.mmd](diagrams/journey-listen.mmd)
 
 ## Repositories
 
