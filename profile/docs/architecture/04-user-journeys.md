@@ -7,11 +7,13 @@
 sequenceDiagram
   participant Listener
   participant Player as VLC
-  participant Kithara
+  participant Kithara as Kithara Stream Server
 
-  Listener->>Player: Open URL stream/lofi
+  Listener->>Player: Paste bardie.example/stream/lofi
   Player->>Kithara: GET /stream/lofi
-  Kithara-->>Player: ICY audio + StreamTitle
+  loop ICY stream
+    Kithara-->>Player: audio + StreamTitle metadata
+  end
 ```
 
 ## DJ: search and play
@@ -55,3 +57,4 @@ Source diagrams: [diagrams/](diagrams/)
 **Kithara journeys:** [domains/clients.md](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md)
 
 **Read next:** [05-deployment.md](05-deployment.md)
+
