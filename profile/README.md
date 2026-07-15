@@ -10,7 +10,7 @@ Bardie makes listening to music with your friends easy — without proprietary s
 
 ## ✨ Features
 
-- 🧩 Extendable through modules
+- 🧩 Extendable through modules — clients, sources, and auth
 - 🎧 One audio stream for everyone
 - 🏠 Self-hosted and fully under your control
 
@@ -20,7 +20,7 @@ Bardie makes listening to music with your friends easy — without proprietary s
 
 📖 **[Architecture documentation](docs/architecture/README.md)** — ecosystem overview, ADRs, and design decisions.
 
-Bardie is built around a modular architecture where different components handle specific parts of the listening experience.
+Bardie is built around a modular architecture. **Kithara** is the core; everything else plugs in as a module chosen for how your community listens and communicates.
 
 ### 🎼 Kithara — Core
 
@@ -29,30 +29,33 @@ The main instrument of Bardie.
 Kithara provides the core functionality through a REST API:
 - managing audio streams
 - controlling playback
-- handling connected clients and modules
+- orchestrating connected client, source, and auth modules
 
-### 🌐 Plume — Web Interface
+### 🖥️ Client Modules *(names TBD)*
 
-The main user-facing interface for Bardie.
+The user-facing surface is **modular** — not tied to a single web app. Each client module talks to Kithara's REST API and presents Bardie in a channel your community already uses.
 
-Plume communicates with Kithara to:
-- control active streams
-- listen to available streams
-- provide features based on user access rights
+```text
+├── Plume            → Web UI; list streams, control playback, optional in-browser listen
+├── Discord bot    → Play Bardie streams in voice channels; select and control sources
+└── Telegram bot   → Control Strunas remotely from Telegram chats
+```
 
-### 🤖 Discord Bot *(name TBD)*
+More client modules may appear as convenient communication channels are found. **Legacy players** (VLC, VRChat) are listen-only — they use `/stream/{slug}` but are not full client modules.
 
-A Discord integration for bringing Bardie streams directly into voice channels.
+### 🔐 Auth Adapter Modules *(names TBD)*
 
-Planned functionality:
-- play Bardie streams directly in Discord voice channels
-- select and control audio sources
+Pluggable login and permission providers. Kithara orchestrates discovery and token validation; each adapter owns its login UI.
 
-### ▶️ Audio Source Modules *(names TBD)*
+```text
+├── auth-local   → Username + password (MVP)
+└── auth-oidc    → Zitadel, Google, … (v0.2)
+```
+
+### ▶️ Source Modules *(names TBD)*
 
 Modular providers responsible for supplying audio to Bardie streams.
 
-Planned sources:
 ```text
 ├── YouTube / ytdl source  → Search and play music from online sources using ytdl
 ├── Local stream source    → Re-broadcast direct audio input from your PC

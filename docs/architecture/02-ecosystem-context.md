@@ -8,7 +8,7 @@ C4Context
   System(bardie, "Bardie", "Modular audio broadcast platform")
   System_Ext(players, "Media Players", "VLC VRChat")
   System_Ext(idp, "OIDC IdP", "Zitadel etc v0.2")
-  Rel(dj, bardie, "Controls via Plume")
+  Rel(dj, bardie, "Controls via client modules")
   Rel(listener, players, "Listens")
   Rel(players, bardie, "GET /stream/slug")
   Rel(bardie, idp, "OIDC v0.2")
@@ -16,7 +16,7 @@ C4Context
 
 > Diagram uses C4-PlantUML-style notation in Mermaid for orientation. Source: [diagrams/ecosystem-context.mmd](diagrams/ecosystem-context.mmd)
 
-Bardie sits between **DJs** (stream owners), **listeners** (tune in anywhere), and **pluggable modules** (audio + auth).
+Bardie sits between **DJs** (stream owners), **listeners** (tune in anywhere), and **pluggable modules** — client surfaces, audio sources, and auth.
 
 ## Repositories
 

@@ -2,6 +2,8 @@ flowchart TB
   subgraph bardie [Bardie]
     Kithara[Kithara Core]
     Plume[Plume UI]
+    Discord[Discord bot]
+    Telegram[Telegram bot]
     SrcMod[Source Modules]
     AuthMod[Auth Adapters]
   end
@@ -11,6 +13,8 @@ flowchart TB
     Grafana[Grafana Stack]
   end
   Plume --> Kithara
+  Discord --> Kithara
+  Telegram --> Kithara
   SrcMod -->|gRPC| Kithara
   AuthMod -->|gRPC| Kithara
   Players -->|/stream/slug| Kithara
