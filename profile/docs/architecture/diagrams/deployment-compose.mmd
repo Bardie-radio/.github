@@ -1,8 +1,8 @@
 flowchart TB
-  subgraph proxy [Reverse Proxy]
-    P[Caddy :443]
+  subgraph edge [Edge]
+    P[Reverse Proxy]
   end
-  subgraph apps [Compose MVP]
+  subgraph apps [App stack MVP]
     Plume[plume]
     Kithara[kithara]
     YT[youtube-module]

@@ -4,7 +4,7 @@
 ```mermaid
 flowchart TB
   subgraph client [Client modules]
-    Plume[Plume (Web UI)]
+    Plume["Plume (Web UI)"]
     Discord[Discord bot]
     Telegram[Telegram bot]
   end
@@ -13,7 +13,7 @@ flowchart TB
   end
   subgraph core [Kithara]
     API[REST API]
-    Neck[Neck (Encoder)]
+    Neck["Neck (Encoder)"]
     StreamSrv[Stream Server]
     AuthOrch[Auth Orchestrator]
   end
@@ -47,7 +47,7 @@ flowchart TB
 | Client module | Plume (web), Discord bot, Telegram bot | Yes (Plume); v0.2 (Discord); Future (Telegram)|
 | Source module | YouTube, Local input, File source | Yes (YouTube); Future (Direct input, File) |
 | Auth adapter | auth-local, auth-oidc | Yes (auth-local); v0.2 (auth-oidc) |
-| Listen | Legacy players | N/A |
+| Listener | Legacy players | N/A |
 
 **Client modules** are the modular user-facing layer — web, Discord, Telegram, and more. They share Kithara's REST API; only Plume is required for MVP.
 

@@ -34,7 +34,7 @@ flowchart TB
 | 2 | [Ecosystem context](02-ecosystem-context.md) | 2 min |
 | 3 | [Component landscape](03-component-landscape.md) | 3 min |
 | 4 | [User journeys](04-user-journeys.md) | 3 min |
-| 5 | [Deployment](05-deployment.md) | 2 min |
+| 5 | [Deployment](05-deployment.md) | 3 min — whole-stack process; per-container detail in each repo |
 
 
 ## Repositories
