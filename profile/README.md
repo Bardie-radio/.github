@@ -18,6 +18,8 @@ Bardie makes listening to music with your friends easy — without proprietary s
 
 ## 🏗️ Architecture
 
+📖 **[Architecture documentation](docs/architecture/README.md)** — ecosystem overview, ADRs, and design decisions.
+
 Bardie is built around a modular architecture where different components handle specific parts of the listening experience.
 
 ### 🎼 Kithara — Core

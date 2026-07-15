@@ -1,0 +1,18 @@
+flowchart TB
+  subgraph bardie [Bardie]
+    Kithara[Kithara Core]
+    Plume[Plume UI]
+    SrcMod[Source Modules]
+    AuthMod[Auth Adapters]
+  end
+  subgraph external [External]
+    Players[VLC VRChat]
+    IdP[OIDC IdP v0.2]
+    Grafana[Grafana Stack]
+  end
+  Plume --> Kithara
+  SrcMod -->|gRPC| Kithara
+  AuthMod -->|gRPC| Kithara
+  Players -->|/stream/slug| Kithara
+  Plume -.-> IdP
+  bardie --> Grafana

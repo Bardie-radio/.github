@@ -1,0 +1,22 @@
+flowchart TB
+  subgraph proxy [Reverse Proxy]
+    P[Caddy :443]
+  end
+  subgraph apps [Compose MVP]
+    Plume[plume]
+    Kithara[kithara]
+    YT[youtube-module]
+    Auth[auth-local]
+  end
+  subgraph observe [Observability]
+    OTel[otel-collector]
+  end
+  Internet --> P
+  P --> Plume
+  P --> Kithara
+  Kithara --> YT
+  Kithara --> Auth
+  Plume --> OTel
+  Kithara --> OTel
+  YT --> OTel
+  Auth --> OTel

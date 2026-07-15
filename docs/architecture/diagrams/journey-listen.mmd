@@ -1,0 +1,10 @@
+sequenceDiagram
+  participant Listener
+  participant Player as VLC
+  participant Kithara as Kithara Stream Server
+
+  Listener->>Player: Paste bardie.example/stream/lofi
+  Player->>Kithara: GET /stream/lofi
+  loop ICY stream
+    Kithara-->>Player: audio + StreamTitle metadata
+  end
