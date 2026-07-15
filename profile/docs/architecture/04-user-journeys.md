@@ -2,6 +2,7 @@
 
 ## Listen (public stream)
 
+<!-- mermaid-source: diagrams/journey-listen.mmd -->
 ```mermaid
 sequenceDiagram
   participant Listener
@@ -40,7 +41,9 @@ sequenceDiagram
 
   User->>Plume: Open /
   Plume->>Kithara: GET /api/auth/discovery
-  User->>Plume: Submit password form
+  Kithara->>Plume: auth_providers.json
+  Plume->>User: Auth selection and forms
+  User->>Plume: Submit auth form
   Plume->>Auth: Authenticate
   Auth-->>Plume: token
 ```

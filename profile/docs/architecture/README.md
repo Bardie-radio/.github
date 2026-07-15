@@ -3,22 +3,22 @@
 ```mermaid
 flowchart TB
   subgraph bardie [Bardie Ecosystem]
-    Kithara[Kithara Core]
+    Kithara[Kithara]
     Plume[Plume UI]
     SrcMod[Source Modules]
     AuthMod[Auth Adapters]
   end
   subgraph external [External]
-    Players[VLC VRChat Players]
-    IdP[OIDC IdP v0.2]
-    Grafana[Grafana Stack]
+    Players[Network capable player]
+    IdP[OIDC]
+    OTel[OTel compatible consumer]
   end
   Plume --> Kithara
   SrcMod -->|gRPC| Kithara
   AuthMod -->|gRPC| Kithara
   Players -->|/stream/slug| Kithara
   Plume -.-> IdP
-  bardie --> Grafana
+  bardie --> OTel
 ```
 
 5–10 minute orientation for the Bardie ecosystem. Every page opens with a diagram.
@@ -35,6 +35,8 @@ flowchart TB
 | 4 | [User journeys](04-user-journeys.md) | 3 min |
 
 ## Diagrams
+
+Paired `.md` embeds and `.mmd` sources are kept in sync by [Mermaid parity CI](../mermaid-sync.md).
 
 - [ecosystem-context.mmd](diagrams/ecosystem-context.mmd)
 - [deployment-compose.mmd](diagrams/deployment-compose.mmd)

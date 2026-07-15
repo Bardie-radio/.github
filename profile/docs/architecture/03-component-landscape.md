@@ -3,35 +3,36 @@
 ```mermaid
 flowchart TB
   subgraph client [Client modules]
-    Plume[Plume]
+    Plume[Plume (Web UI)]
     Discord[Discord bot]
     Telegram[Telegram bot]
   end
-  subgraph listen [Listen-only]
-    Players[Legacy Players]
+  subgraph listen [Listen]
+    Players[Players]
   end
   subgraph core [Kithara]
     API[REST API]
-    Neck[Neck]
+    Neck[Neck (Encoder)]
     StreamSrv[Stream Server]
     AuthOrch[Auth Orchestrator]
   end
   subgraph modules [Backend modules]
-    YT[YouTube]
-    AuthLocal[auth-local]
+    src[source-modules]
+    auth[auth-modules]
   end
   subgraph observe [Observability]
     OTel[OTel]
   end
   Plume --> API
   Discord --> API
+  Discord --> StreamSrv
   Telegram --> API
   Plume --> StreamSrv
   Players --> StreamSrv
   API --> Neck
   API --> AuthOrch
-  Neck --> YT
-  AuthOrch --> AuthLocal
+  Neck --> src
+  AuthOrch --> auth
   core --> OTel
   modules --> OTel
   client --> OTel
@@ -39,17 +40,13 @@ flowchart TB
 
 ## Components
 
-| Component | Type | MVP |
-|-----------|------|-----|
-| Kithara | Core monolith | Yes |
-| Plume | Client module (web) | Yes |
-| Discord bot | Client module | Future |
-| Telegram bot | Client module | Future |
-| YouTube module | Source adapter | Yes |
-| auth-local | Auth adapter | Yes |
-| auth-oidc | Auth adapter | v0.2 |
-| Legacy players | Listen-only | Yes |
-| Icecast | Output relay | Community demand only |
+| Type | Components | MVP |
+|------|------------|-----|
+| Core monolith | Kithara | Yes |
+| Client module | Plume (web), Discord bot, Telegram bot | Yes (Plume); v0.2 (Discord); Future (Telegram)|
+| Source module | YouTube, Local input, File source | Yes (YouTube); Future (Direct input, File) |
+| Auth adapter | auth-local, auth-oidc | Yes (auth-local); v0.2 (auth-oidc) |
+| Listen | Legacy players | N/A |
 
 **Client modules** are the modular user-facing layer — web, Discord, Telegram, and more. They share Kithara's REST API; only Plume is required for MVP.
 

@@ -6,8 +6,9 @@ mindmap
     Modular
       Source modules
       Auth adapters
+      Client module
     Broadcast
-      One stream per Struna
+      Everyone can control queue
       Everyone hears same feed
     Self-hosted
       Docker Compose
