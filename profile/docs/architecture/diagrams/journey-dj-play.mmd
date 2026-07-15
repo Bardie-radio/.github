@@ -1,0 +1,11 @@
+sequenceDiagram
+  participant DJ
+  participant Plume
+  participant Kithara
+  participant YT as YouTube Module
+
+  DJ->>Plume: /player/friday-jazz
+  Plume->>Kithara: POST /api/streams/id/play
+  Kithara->>YT: CreateInstance
+  YT-->>Kithara: socketPath
+  Kithara-->>Plume: now playing

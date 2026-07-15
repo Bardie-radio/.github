@@ -1,5 +1,6 @@
 # Component Landscape
 
+<!-- mermaid-source: diagrams/component-landscape.mmd -->
 ```mermaid
 flowchart TB
   subgraph client [Client modules]
