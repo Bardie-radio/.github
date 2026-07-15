@@ -1,0 +1,73 @@
+name: Reusable mermaid check
+
+on:
+  workflow_call:
+    inputs:
+      docs_dir:
+        type: string
+        default: docs
+      ci_ref:
+        type: string
+        default: main
+    outputs:
+      conflict_count:
+        description: Number of mermaid parity conflicts
+        value: ${{ jobs.check.outputs.conflict_count }}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      conflict_count: ${{ steps.result.outputs.conflict_count }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          ref: ${{ inputs.ci_ref }}
+          path: bardie-ci
+
+      - name: Run mermaid parity check
+        id: result
+        run: |
+          set +e
+          node bardie-ci/scripts/mermaid-sync/check.mjs \
+            --root . \
+            --docs "${{ inputs.docs_dir }}" \
+            --json-out conflicts.json \
+            --comment-out pr-comment.md
+          code=$?
+          count=$(node -e "console.log(JSON.parse(require('fs').readFileSync('conflicts.json','utf8')).length)")
+          echo "conflict_count=$count" >> "$GITHUB_OUTPUT"
+          exit "$code"
+
+      - name: Comment on PR
+        if: failure() && github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const body = fs.readFileSync('pr-comment.md', 'utf8') + '\n\n<!-- mermaid-sync-comment -->';
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+            });
+            const existing = comments.find((c) => c.body.includes('<!-- mermaid-sync-comment -->'));
+            if (existing) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: existing.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number,
+                body,
+              });
+            }

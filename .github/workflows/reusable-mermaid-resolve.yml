@@ -1,0 +1,113 @@
+name: Reusable mermaid resolve
+
+on:
+  workflow_call:
+    inputs:
+      ci_ref:
+        type: string
+        default: main
+      allow_pr_author:
+        type: boolean
+        default: true
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate comment and permissions
+        id: auth
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const commentBody = context.payload.comment.body;
+            if (!commentBody.includes('/mermaid-sync')) {
+              core.setFailed('Comment does not contain /mermaid-sync');
+              return;
+            }
+
+            const commenter = context.payload.comment.user.login;
+            const { data: pr } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            let authorized = false;
+            if (${{ inputs.allow_pr_author }} && commenter === pr.user.login) {
+              authorized = true;
+            }
+
+            if (!authorized) {
+              try {
+                const { data: perm } = await github.rest.repos.getCollaboratorPermissionLevel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  username: commenter,
+                });
+                if (['admin', 'maintain', 'write'].includes(perm.permission)) {
+                  authorized = true;
+                }
+              } catch (error) {
+                core.info(`Collaborator lookup failed: ${error.message}`);
+              }
+            }
+
+            if (!authorized) {
+              core.setFailed(`@${commenter} is not allowed to run /mermaid-sync on this PR`);
+              return;
+            }
+
+            core.setOutput('comment', commentBody);
+            core.setOutput('ref', pr.head.ref);
+            core.setOutput('sha', pr.head.sha);
+            core.setOutput('repo', pr.head.repo.full_name);
+            core.setOutput('comment_id', String(context.payload.comment.id));
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ steps.auth.outputs.repo }}
+          ref: ${{ steps.auth.outputs.ref }}
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          ref: ${{ inputs.ci_ref }}
+          path: bardie-ci
+
+      - name: Apply mermaid sync
+        id: apply
+        run: |
+          node bardie-ci/scripts/mermaid-sync/apply.mjs \
+            --root . \
+            --comment "${{ steps.auth.outputs.comment }}"
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "docs: sync mermaid diagram via /mermaid-sync"
+          git push origin "HEAD:${{ steps.auth.outputs.ref }}"
+
+      - name: Reply on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: [
+                '✅ Mermaid diagram synced from `/mermaid-sync`.',
+                '',
+                'Checks will re-run on the updated commit.',
+                '',
+                `Triggered by @${context.payload.comment.user.login}`,
+              ].join('\n'),
+            });

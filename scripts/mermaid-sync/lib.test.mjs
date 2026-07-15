@@ -1,0 +1,95 @@
+import assert from "node:assert/strict";
+import fs from "node:fs";
+import os from "node:os";
+import path from "node:path";
+import test from "node:test";
+import {
+  applySync,
+  buildPrComment,
+  findConflicts,
+  normalizeMermaid,
+  parseCommand,
+  parsePairsFromMarkdown,
+} from "./lib.mjs";
+
+function withFixture(name, fn) {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "mermaid-sync-"));
+  const fixtureRoot = path.join(import.meta.dirname, "fixtures", name);
+  fs.cpSync(fixtureRoot, dir, { recursive: true });
+  return fn(dir);
+}
+
+test("normalizeMermaid trims trailing whitespace and blank edges", () => {
+  assert.equal(normalizeMermaid("  a  \n\nb  \n"), "a\n\nb");
+});
+
+test("parsePairsFromMarkdown finds paired blocks", () => {
+  const md = fs.readFileSync(
+    path.join(import.meta.dirname, "fixtures", "in-sync", "docs", "page.md"),
+    "utf8",
+  );
+  const pairs = parsePairsFromMarkdown(md, "docs/page.md");
+  assert.equal(pairs.length, 1);
+  assert.equal(pairs[0].mmd_path, "docs/diagrams/sample.mmd");
+});
+
+test("findConflicts returns empty for in-sync pair", () => {
+  withFixture("in-sync", (dir) => {
+    const conflicts = findConflicts(dir, ["docs/page.md"]);
+    assert.deepEqual(conflicts, []);
+  });
+});
+
+test("findConflicts detects drift", () => {
+  withFixture("drift", (dir) => {
+    const conflicts = findConflicts(dir, ["docs/page.md"]);
+    assert.equal(conflicts.length, 1);
+    assert.equal(conflicts[0].md_path, "docs/page.md");
+  });
+});
+
+test("applySync use-mmd updates markdown embed", () => {
+  withFixture("drift", (dir) => {
+    const result = applySync(dir, "docs/page.md", 0, "use-mmd");
+    assert.equal(result.changed, true);
+    const conflicts = findConflicts(dir, ["docs/page.md"]);
+    assert.deepEqual(conflicts, []);
+  });
+});
+
+test("applySync use-md updates mmd file", () => {
+  withFixture("drift", (dir) => {
+    const result = applySync(dir, "docs/page.md", 0, "use-md");
+    assert.equal(result.changed, true);
+    const mmd = fs.readFileSync(path.join(dir, "docs/diagrams/sample.mmd"), "utf8");
+    assert.match(mmd, /flowchart LR/);
+    const conflicts = findConflicts(dir, ["docs/page.md"]);
+    assert.deepEqual(conflicts, []);
+  });
+});
+
+test("parseCommand extracts choice and path", () => {
+  assert.deepEqual(parseCommand("/mermaid-sync use-mmd docs/a.md"), {
+    choice: "use-mmd",
+    md_path: "docs/a.md",
+    block_index: 0,
+  });
+  assert.deepEqual(parseCommand("/mermaid-sync use-md docs/a.md#2"), {
+    choice: "use-md",
+    md_path: "docs/a.md",
+    block_index: 2,
+  });
+});
+
+test("buildPrComment includes commands", () => {
+  const comment = buildPrComment([
+    {
+      md_path: "docs/page.md",
+      mmd_path: "docs/diagrams/sample.mmd",
+      md_excerpt: "flowchart LR",
+      mmd_excerpt: "flowchart TB",
+    },
+  ]);
+  assert.match(comment, /Mermaid diagram parity check failed/);
+  assert.match(comment, /\/mermaid-sync use-mmd docs\/page\.md/);
+});
