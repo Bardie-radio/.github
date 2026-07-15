@@ -1,22 +1,11 @@
-flowchart TB
-  subgraph bardie [Bardie]
-    Kithara[Kithara Core]
-    Plume[Plume UI]
-    Discord[Discord bot]
-    Telegram[Telegram bot]
-    SrcMod[Source Modules]
-    AuthMod[Auth Adapters]
-  end
-  subgraph external [External]
-    Players[VLC VRChat]
-    IdP[OIDC IdP v0.2]
-    Grafana[Grafana Stack]
-  end
-  Plume --> Kithara
-  Discord --> Kithara
-  Telegram --> Kithara
-  SrcMod -->|gRPC| Kithara
-  AuthMod -->|gRPC| Kithara
-  Players -->|/stream/slug| Kithara
-  Plume -.-> IdP
-  bardie --> Grafana
+C4Context
+  title Bardie System Context
+  Person(dj, "DJ", "Creates streams queues music")
+  Person(listener, "Listener", "Tunes in via player")
+  System(bardie, "Bardie", "Modular audio broadcast platform")
+  System_Ext(players, "Media Players", "VLC VRChat")
+  System_Ext(idp, "OIDC IdP", "Zitadel etc v0.2")
+  Rel(dj, bardie, "Controls via client modules")
+  Rel(listener, players, "Listens")
+  Rel(players, bardie, "GET /stream/slug")
+  Rel(bardie, idp, "OIDC v0.2")
