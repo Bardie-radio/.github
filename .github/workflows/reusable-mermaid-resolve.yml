@@ -16,7 +16,7 @@ jobs:
     steps:
       - name: Validate comment and permissions
         id: auth
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const commentBody = context.payload.comment.body;
@@ -76,6 +76,10 @@ jobs:
           ref: ${{ inputs.ci_ref }}
           path: bardie-ci
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
       - name: Apply mermaid sync
         id: apply
         run: |
@@ -96,7 +100,7 @@ jobs:
           git push origin "HEAD:${{ steps.auth.outputs.ref }}"
 
       - name: Reply on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             await github.rest.issues.createComment({
