@@ -1,0 +1,16 @@
+name: Mermaid sync scripts
+
+on:
+  push:
+    paths:
+      - scripts/mermaid-sync/**
+  pull_request:
+    paths:
+      - scripts/mermaid-sync/**
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node --test scripts/mermaid-sync/lib.test.mjs

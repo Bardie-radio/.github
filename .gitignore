@@ -1,0 +1,3 @@
+# Ephemeral output from scripts/mermaid-sync/check.mjs (local or CI workspace)
+conflicts.json
+pr-comment.md
