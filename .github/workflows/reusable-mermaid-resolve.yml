@@ -19,17 +19,33 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
-            const commentBody = context.payload.comment.body;
+            const eventName = context.eventName;
+            let commentBody = '';
+            let commenter = '';
+
+            if (eventName === 'issue_comment') {
+              commentBody = context.payload.comment?.body || '';
+              commenter = context.payload.comment.user.login;
+            } else if (eventName === 'pull_request_review') {
+              commentBody = context.payload.review?.body || '';
+              commenter = context.payload.review.user.login;
+            } else {
+              core.setFailed(`Unsupported event: ${eventName}`);
+              return;
+            }
+
             if (!commentBody.includes('/mermaid-sync')) {
               core.setFailed('Comment does not contain /mermaid-sync');
               return;
             }
 
-            const commenter = context.payload.comment.user.login;
+            const pull_number =
+              context.payload.pull_request?.number ?? context.issue.number;
+
             const { data: pr } = await github.rest.pulls.get({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              pull_number: context.issue.number,
+              pull_number,
             });
 
             let authorized = false;
@@ -61,7 +77,10 @@ jobs:
             core.setOutput('ref', pr.head.ref);
             core.setOutput('sha', pr.head.sha);
             core.setOutput('repo', pr.head.repo.full_name);
-            core.setOutput('comment_id', String(context.payload.comment.id));
+            core.setOutput('pull_number', String(pull_number));
+            if (context.payload.comment?.id) {
+              core.setOutput('comment_id', String(context.payload.comment.id));
+            }
 
       - uses: actions/checkout@v4
         with:
@@ -103,15 +122,21 @@ jobs:
         uses: actions/github-script@v8
         with:
           script: |
+            const actor =
+              context.payload.comment?.user?.login ||
+              context.payload.review?.user?.login ||
+              context.actor;
+            const issue_number =
+              context.payload.pull_request?.number ?? context.issue.number;
             await github.rest.issues.createComment({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              issue_number: context.issue.number,
+              issue_number,
               body: [
                 '✅ Mermaid diagram synced from `/mermaid-sync`.',
                 '',
                 'Checks will re-run on the updated commit.',
                 '',
-                `Triggered by @${context.payload.comment.user.login}`,
+                `Triggered by @${actor}`,
               ].join('\n'),
             });

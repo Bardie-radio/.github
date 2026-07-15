@@ -23,16 +23,18 @@ When a paired embed and `.mmd` file differ:
 
 1. The **Mermaid sync** check fails (blocks merge).
 2. A bot comment lists each conflict with copy-paste commands.
-3. Reply on the PR with your choice, for example:
+3. Reply on the PR **Conversation** tab (or submit a PR review comment) with your choice, for example:
    - `/mermaid-sync use-mmd docs/architecture/02-ecosystem-context.md` — update the embed from the `.mmd` file
    - `/mermaid-sync use-md docs/architecture/02-ecosystem-context.md` — update the `.mmd` from the embed
 4. A follow-up workflow commits to the PR branch and checks re-run.
 
-Multiple paired diagrams on one page use a block index:
+Multiple commands in one comment are applied in order. Multiple paired diagrams on one page use a block index:
 
 ```text
 /mermaid-sync use-mmd docs/architecture/04-user-journeys.md#0
 ```
+
+> Comment-triggered resolve always runs the workflow from the repo **default branch**. Merge workflow changes to `main` before relying on new trigger types.
 
 ## Enable in a Bardie repo
 
@@ -47,6 +49,8 @@ on:
       - docs/**
   issue_comment:
     types: [created]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   check:
@@ -58,9 +62,16 @@ jobs:
 
   resolve:
     if: |
-      github.event_name == 'issue_comment' &&
-      github.event.issue.pull_request &&
-      contains(github.event.comment.body, '/mermaid-sync')
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        contains(github.event.comment.body, '/mermaid-sync')
+      ) || (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'commented' &&
+        github.event.review.body != '' &&
+        contains(github.event.review.body, '/mermaid-sync')
+      )
     uses: Bardie-radio/.github/.github/workflows/reusable-mermaid-resolve.yml@main
     permissions:
       contents: write

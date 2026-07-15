@@ -6,6 +6,8 @@ on:
       - profile/docs/**
   issue_comment:
     types: [created]
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   check:
@@ -19,9 +21,16 @@ jobs:
 
   resolve:
     if: |
-      github.event_name == 'issue_comment' &&
-      github.event.issue.pull_request &&
-      contains(github.event.comment.body, '/mermaid-sync')
+      (
+        github.event_name == 'issue_comment' &&
+        github.event.issue.pull_request &&
+        contains(github.event.comment.body, '/mermaid-sync')
+      ) || (
+        github.event_name == 'pull_request_review' &&
+        github.event.review.state == 'commented' &&
+        github.event.review.body != '' &&
+        contains(github.event.review.body, '/mermaid-sync')
+      )
     uses: ./.github/workflows/reusable-mermaid-resolve.yml
     permissions:
       contents: write

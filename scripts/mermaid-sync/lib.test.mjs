@@ -9,6 +9,7 @@ import {
   findConflicts,
   normalizeMermaid,
   parseCommand,
+  parseCommands,
   parsePairsFromMarkdown,
 } from "./lib.mjs";
 
@@ -79,6 +80,18 @@ test("parseCommand extracts choice and path", () => {
     md_path: "docs/a.md",
     block_index: 2,
   });
+});
+
+test("parseCommands extracts multiple commands", () => {
+  assert.deepEqual(
+    parseCommands(
+      "/mermaid-sync use-md docs/a.md\n/mermaid-sync use-mmd docs/b.md#1",
+    ),
+    [
+      { choice: "use-md", md_path: "docs/a.md", block_index: 0 },
+      { choice: "use-mmd", md_path: "docs/b.md", block_index: 1 },
+    ],
+  );
 });
 
 test("buildPrComment includes commands", () => {

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
-import { applySync, parseCommand } from "./lib.mjs";
+import path from "node:path";
+import { applySync, parseCommand, parseCommands } from "./lib.mjs";
 
 function parseArgs(argv) {
   const options = {
@@ -23,17 +24,6 @@ function parseArgs(argv) {
     }
   }
 
-  if (options.comment) {
-    const parsed = parseCommand(options.comment);
-    if (!parsed) {
-      console.error("Could not parse /mermaid-sync command from comment");
-      process.exit(1);
-    }
-    options.choice = parsed.choice;
-    options.mdPath = parsed.md_path;
-    options.blockIndex = parsed.block_index;
-  }
-
   return options;
 }
 
@@ -45,12 +35,39 @@ function printHelp() {
 
 const options = parseArgs(process.argv);
 
-if (!options.choice || !options.mdPath) {
-  printHelp();
-  process.exit(1);
-}
-
 try {
+  if (options.comment) {
+    const commands = parseCommands(options.comment);
+    if (commands.length === 0) {
+      console.error("Could not parse /mermaid-sync command from comment");
+      process.exit(1);
+    }
+
+    let anyChanged = false;
+    for (const command of commands) {
+      const result = applySync(
+        options.root,
+        command.md_path,
+        command.block_index,
+        command.choice,
+      );
+      if (!result.changed) {
+        console.log(`Already in sync: ${result.md_path}`);
+        continue;
+      }
+      anyChanged = true;
+      console.log(
+        `Synced ${result.md_path} ↔ ${result.mmd_path} (${result.choice})`,
+      );
+    }
+    process.exit(0);
+  }
+
+  if (!options.choice || !options.mdPath) {
+    printHelp();
+    process.exit(1);
+  }
+
   const result = applySync(
     options.root,
     options.mdPath,

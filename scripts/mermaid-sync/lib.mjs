@@ -169,7 +169,7 @@ export function buildPrComment(conflicts) {
       "",
       "</details>",
       "",
-      "Pick the canonical version (reply on this PR):",
+      "Pick the canonical version (PR Conversation comment, or a submitted review):",
       `- \`/mermaid-sync use-mmd ${md_path}\` — keep the \`.mmd\` file, update the embed`,
       `- \`/mermaid-sync use-md ${md_path}\` — keep the embed, update the \`.mmd\` file`,
     ].join("\n");
@@ -179,14 +179,22 @@ export function buildPrComment(conflicts) {
 }
 
 export function parseCommand(commentBody) {
-  const match = commentBody.match(COMMAND_RE);
-  if (!match) return null;
+  const commands = parseCommands(commentBody);
+  return commands[0] || null;
+}
 
-  return {
-    choice: match[1].toLowerCase(),
-    md_path: match[2].replace(/\\/g, "/"),
-    block_index: match[3] ? Number(match[3]) : 0,
-  };
+export function parseCommands(commentBody) {
+  const results = [];
+  const re = new RegExp(COMMAND_RE.source, "gi");
+  let match;
+  while ((match = re.exec(commentBody)) !== null) {
+    results.push({
+      choice: match[1].toLowerCase(),
+      md_path: match[2].replace(/\\/g, "/"),
+      block_index: match[3] ? Number(match[3]) : 0,
+    });
+  }
+  return results;
 }
 
 export function applySync(repoRoot, mdPath, blockIndex, choice) {
