@@ -99,10 +99,19 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Select mermaid-sync scripts
+        id: scripts
+        run: |
+          if [ -f scripts/mermaid-sync/apply.mjs ]; then
+            echo "root=." >> "$GITHUB_OUTPUT"
+          else
+            echo "root=bardie-ci" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Apply mermaid sync
         id: apply
         run: |
-          node bardie-ci/scripts/mermaid-sync/apply.mjs \
+          node "${{ steps.scripts.outputs.root }}/scripts/mermaid-sync/apply.mjs" \
             --root . \
             --comment "${{ steps.auth.outputs.comment }}"
 

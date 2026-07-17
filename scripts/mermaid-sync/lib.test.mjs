@@ -34,6 +34,29 @@ test("parsePairsFromMarkdown finds paired blocks", () => {
   assert.equal(pairs[0].mmd_path, "docs/diagrams/sample.mmd");
 });
 
+test("resolveMmdPath prefers repo-root then md-relative", async () => {
+  const { resolveMmdPath } = await import("./lib.mjs");
+  withFixture("in-sync", (dir) => {
+    assert.equal(
+      resolveMmdPath(dir, "docs/page.md", "docs/diagrams/sample.mmd"),
+      "docs/diagrams/sample.mmd",
+    );
+  });
+
+  const legacy = fs.mkdtempSync(path.join(os.tmpdir(), "mermaid-legacy-"));
+  fs.mkdirSync(path.join(legacy, "docs", "diagrams"), { recursive: true });
+  fs.writeFileSync(path.join(legacy, "docs", "diagrams", "sample.mmd"), "flowchart LR\n");
+  fs.writeFileSync(
+    path.join(legacy, "docs", "page.md"),
+    "<!-- mermaid-source: diagrams/sample.mmd -->\n```mermaid\nflowchart LR\n```\n",
+  );
+  assert.equal(
+    resolveMmdPath(legacy, "docs/page.md", "diagrams/sample.mmd"),
+    "docs/diagrams/sample.mmd",
+  );
+  fs.rmSync(legacy, { recursive: true, force: true });
+});
+
 test("findConflicts returns empty for in-sync pair", () => {
   withFixture("in-sync", (dir) => {
     const conflicts = findConflicts(dir, ["docs/page.md"]);
