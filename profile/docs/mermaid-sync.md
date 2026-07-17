@@ -7,14 +7,14 @@ GitHub renders Mermaid only inside fenced ` ```mermaid ` blocks in Markdown. To 
 Place an HTML comment immediately above the fence:
 
 ```markdown
-<!-- mermaid-source: diagrams/ecosystem-context.mmd -->
+<!-- mermaid-source: profile/docs/architecture/diagrams/ecosystem-context.mmd -->
 ```mermaid
 flowchart TB
   A --> B
 ```
 ```
 
-- Path is relative to the `.md` file.
+- Path is **repo-root-relative** (not relative to the `.md` file).
 - Unpaired embeds and orphan `.mmd` files are ignored (not checked).
 
 ## What happens on a PR

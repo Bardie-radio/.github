@@ -1,51 +1,50 @@
 # Component Landscape
 
-<!-- mermaid-source: diagrams/component-landscape.mmd -->
+<!-- mermaid-source: profile/docs/architecture/diagrams/component-landscape.mmd -->
 ```mermaid
 flowchart TB
   subgraph client [Client modules]
-    Plume["Plume (Web UI)"]
-    Discord[Discord bot]
-    Telegram[Telegram bot]
+    Plume["Plume Web UI MVP"]
+    Discord["Discord bot future"]
+    Telegram["Telegram bot future"]
   end
   subgraph listen [Listen]
-    Players[Players]
+    Players[Legacy players]
   end
   subgraph backend [Kithara backend]
     KitharaBox[Kithara]
     src[source-modules]
-    auth[auth-modules]
+    auth["auth local built-in / OIDC future"]
     KitharaBox --- src
     KitharaBox --- auth
   end
   subgraph observe [Observability]
-    OTel[OTel]
+    OTel[otel_collector external]
   end
   Plume --> KitharaBox
-  Discord --> KitharaBox
-  Telegram --> KitharaBox
-  Plume -->|ICY stream| KitharaBox
+  Discord -.->|REST future| KitharaBox
+  Telegram -.->|REST future| KitharaBox
   Players -->|ICY stream| KitharaBox
-  Discord -->|ICY stream| KitharaBox
   backend --> OTel
-  client --> OTel
+  Plume --> OTel
+  src --> OTel
 ```
 
-**Kithara** plus its source and auth modules are one backend system. Client modules and players sit outside and talk to it over documented interfaces. Internals (Neck, Stream Server, Auth Orchestrator) stay in the kithara deep dive.
+**Kithara** plus its source modules (and later OIDC adapters) are one backend system. Client modules and players sit outside. Internals (Neck, Stream Server, Auth Orchestrator) stay in the kithara deep dive.
 
 ## Components
 
 | Type | Components | MVP |
 |------|------------|-----|
-| Core monolith | Kithara | Yes |
-| Client module | Plume (web), Discord bot, Telegram bot | Yes (Plume); Future (Discord, Telegram) |
-| Source module | YouTube, Local input, File source | Yes (YouTube); Future (Direct input, File) |
-| Auth adapter | Login+password (MVP), OIDC (v0.2) | Yes (login+password); names undecided |
-| Listener | Legacy players | N/A |
+| Core monolith | Kithara (incl. local password provider) | Yes |
+| Client module | Plume (web), Discord bot, Telegram bot | Plume optional but primary UI; bots future |
+| Source module | YouTube, Local input, File source | Yes (YouTube); Future (others) |
+| Auth | Local built-in; OIDC adapter (v0.2) | Yes (local); names TBD for OIDC |
+| Listener | Legacy players (ICY) | N/A |
 
-**Client modules** are the modular user-facing layer — web, Discord, Telegram, and more. They share Kithara's REST API; only Plume is required for MVP.
+**Client modules** share Kithara's REST API. Discord/Telegram are control clients later — not ICY paste targets like VLC.
 
-No Icecast in MVP — Kithara serves ICY directly.
+No Icecast in MVP — Kithara serves ICY directly. OTel collector is **external**.
 
 **Kithara detail:** [Internal structure](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/overview/02-internal-structure.md) · [Client modules](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md)
 

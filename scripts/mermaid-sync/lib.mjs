@@ -45,8 +45,8 @@ export function parsePairsFromMarkdown(mdContent, mdPath) {
     if (j >= lines.length) continue;
 
     const mmdRelative = commentMatch[1];
-    const mdDir = path.dirname(mdPath);
-    const mmdPath = path.normalize(path.join(mdDir, mmdRelative)).replace(/\\/g, "/");
+    // Paths in <!-- mermaid-source: ... --> are repo-root-relative.
+    const mmdPath = path.normalize(mmdRelative).replace(/\\/g, "/");
 
     pairs.push({
       id: `${mdPath.replace(/\\/g, "/")}#${blockIndex}`,
