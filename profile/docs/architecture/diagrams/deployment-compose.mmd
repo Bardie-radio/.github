@@ -5,18 +5,15 @@ flowchart TB
   subgraph apps [App stack MVP]
     Plume[bardie_plume]
     Kithara[bardie_kithara]
-    YT[bardie_youtube]
-    Auth["auth adapter (MVP)"]
+    YT["YouTube source name TBD"]
   end
-  subgraph observe [Observability]
-    OTel[otel-collector]
+  subgraph observe [Observability external]
+    OTel[otel_collector]
   end
   Internet --> P
   P --> Plume
   P --> Kithara
   Kithara --> YT
-  Kithara --> Auth
-  Plume --> OTel
-  Kithara --> OTel
-  YT --> OTel
-  Auth --> OTel
+  Plume -.->|OTLP| OTel
+  Kithara -.->|OTLP| OTel
+  YT -.->|OTLP| OTel

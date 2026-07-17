@@ -13,7 +13,31 @@ export function normalizeMermaid(content) {
     .trim();
 }
 
-export function parsePairsFromMarkdown(mdContent, mdPath) {
+/**
+ * Resolve a mermaid-source path.
+ * Prefer repo-root-relative (new convention). Fall back to paths relative to the
+ * markdown file (legacy) when that file exists.
+ */
+export function resolveMmdPath(repoRoot, mdPath, declared) {
+  const declaredNorm = path.normalize(declared).replace(/\\/g, "/");
+  const rootAbs = path.join(repoRoot, declaredNorm);
+  if (fs.existsSync(rootAbs)) {
+    return declaredNorm;
+  }
+
+  const mdRelative = path
+    .normalize(path.join(path.dirname(mdPath), declared))
+    .replace(/\\/g, "/");
+  const mdAbs = path.join(repoRoot, mdRelative);
+  if (fs.existsSync(mdAbs)) {
+    return mdRelative;
+  }
+
+  // Missing file: report/create under the repo-root convention.
+  return declaredNorm;
+}
+
+export function parsePairsFromMarkdown(mdContent, mdPath, repoRoot = null) {
   const lines = mdContent.split("\n");
   const pairs = [];
   let blockIndex = 0;
@@ -44,15 +68,16 @@ export function parsePairsFromMarkdown(mdContent, mdPath) {
     }
     if (j >= lines.length) continue;
 
-    const mmdRelative = commentMatch[1];
-    const mdDir = path.dirname(mdPath);
-    const mmdPath = path.normalize(path.join(mdDir, mmdRelative)).replace(/\\/g, "/");
+    const declared = commentMatch[1];
+    const mmdPath = repoRoot
+      ? resolveMmdPath(repoRoot, mdPath, declared)
+      : path.normalize(declared).replace(/\\/g, "/");
 
     pairs.push({
       id: `${mdPath.replace(/\\/g, "/")}#${blockIndex}`,
       md_path: mdPath.replace(/\\/g, "/"),
       mmd_path: mmdPath,
-      mmd_relative: mmdRelative,
+      mmd_relative: declared,
       block_index: blockIndex,
       md_content: bodyLines.join("\n"),
     });
@@ -90,7 +115,7 @@ export function findConflicts(repoRoot, mdFiles) {
     if (!fs.existsSync(absolute)) continue;
 
     const content = fs.readFileSync(absolute, "utf8");
-    const pairs = parsePairsFromMarkdown(content, mdPath);
+    const pairs = parsePairsFromMarkdown(content, mdPath, repoRoot);
 
     for (const pair of pairs) {
       try {
@@ -214,7 +239,7 @@ export function applySync(repoRoot, mdPath, blockIndex, choice) {
   }
 
   const mdContent = fs.readFileSync(absoluteMd, "utf8");
-  const pairs = parsePairsFromMarkdown(mdContent, mdPath);
+  const pairs = parsePairsFromMarkdown(mdContent, mdPath, repoRoot);
   const pair = pairs.find((p) => p.block_index === blockIndex);
 
   if (!pair) {

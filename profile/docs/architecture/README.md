@@ -1,25 +1,25 @@
 # Bardie Architecture (Org Overview)
 
-<!-- mermaid-source: diagrams/overview.mmd -->
+<!-- mermaid-source: profile/docs/architecture/diagrams/overview.mmd -->
 ```mermaid
 flowchart TB
   subgraph bardie [Bardie Ecosystem]
     Kithara[Kithara]
     Plume[Plume UI]
     SrcMod[Source Modules]
-    AuthMod[Auth Adapters]
+    AuthMod[Auth providers]
   end
   subgraph external [External]
     Players[Network capable player]
-    IdP[OIDC]
-    OTel[OTel compatible consumer]
+    IdP["OIDC IdP v0.2"]
+    OTel[otel_collector]
   end
   Plume --> Kithara
   SrcMod -->|gRPC| Kithara
   AuthMod -->|gRPC| Kithara
   Players -->|/stream/slug| Kithara
-  Plume -.-> IdP
-  bardie --> OTel
+  Kithara -.->|callback v0.2| IdP
+  bardie -.->|OTLP| OTel
 ```
 
 5–10 minute orientation for the Bardie ecosystem. Every page opens with a diagram.

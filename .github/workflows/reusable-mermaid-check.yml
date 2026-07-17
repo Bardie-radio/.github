@@ -32,11 +32,22 @@ jobs:
         with:
           node-version: "24"
 
+      - name: Select mermaid-sync scripts
+        id: scripts
+        run: |
+          # When this workflow runs in the .github repo itself, prefer the PR
+          # checkout so path-resolution fixes can self-test before landing on main.
+          if [ -f scripts/mermaid-sync/check.mjs ]; then
+            echo "root=." >> "$GITHUB_OUTPUT"
+          else
+            echo "root=bardie-ci" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Run mermaid parity check
         id: result
         run: |
           set +e
-          node bardie-ci/scripts/mermaid-sync/check.mjs \
+          node "${{ steps.scripts.outputs.root }}/scripts/mermaid-sync/check.mjs" \
             --root . \
             --docs "${{ inputs.docs_dir }}" \
             --json-out conflicts.json \

@@ -1,10 +1,10 @@
 # User Journeys
 
-How listeners, DJs, and login flow across Plume, Kithara, and modules. Protocol detail and instance contracts live in kithara docs.
+How listeners, DJs, and login flow across clients, Kithara, and modules. Protocol detail lives in kithara docs. **Plume is optional** — any client module can drive the same Kithara APIs.
 
 ## Listen (public stream)
 
-<!-- mermaid-source: diagrams/journey-listen.mmd -->
+<!-- mermaid-source: profile/docs/architecture/diagrams/journey-listen.mmd -->
 ```mermaid
 sequenceDiagram
   participant Listener
@@ -20,7 +20,7 @@ sequenceDiagram
 
 ## DJ: search and play
 
-<!-- mermaid-source: diagrams/journey-dj-play.mmd -->
+<!-- mermaid-source: profile/docs/architecture/diagrams/journey-dj-play.mmd -->
 ```mermaid
 sequenceDiagram
   participant DJ
@@ -37,26 +37,30 @@ sequenceDiagram
 
 ## Login (MVP)
 
-<!-- mermaid-source: diagrams/journey-login.mmd -->
+<!-- mermaid-source: profile/docs/architecture/diagrams/journey-login.mmd -->
 ```mermaid
 sequenceDiagram
   participant User
-  participant Plume
+  participant Client
   participant Kithara
-  participant Auth as Auth adapter MVP
+  participant Provider as Auth_provider
 
-  User->>Plume: Open /
-  Plume->>Kithara: GET /api/auth/discovery
-  Kithara->>Plume: auth_providers.json
-  Plume->>User: Auth selection and forms
-  User->>Plume: Submit auth form
-  Plume->>Auth: Authenticate
-  Auth-->>Plume: token
+  User->>Client: Open UI or API client
+  Client->>Kithara: GET /api/auth/discovery
+  Kithara-->>Client: providers form_schema or redirect
+  Client->>User: Render form or redirect to IdP
+  User->>Client: Submit credentials or return from IdP
+  Client->>Kithara: POST /api/auth/authenticate or OIDC callback
+  Kithara->>Provider: Authenticate or ExchangeOidcCode
+  Provider-->>Kithara: subject + claims
+  Kithara-->>Client: JWT + refresh
 ```
+
+Identity proof may use the built-in local provider or (v0.2+) an OIDC adapter. **Kithara always issues the JWT.** Deep dive: [kithara auth](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/auth.md).
 
 Source diagrams: [diagrams/](diagrams/)
 
-**Kithara journeys:** [domains/clients.md](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md) · [source-instances](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/source-instances.md) · [grpc-source-module](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/grpc-source-module.md)
+**Kithara journeys:** [domains/clients.md](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md) · [source sessions](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/source-instances.md) · [grpc-source-module](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/grpc-source-module.md)
 
 **Related:** [uri-routing](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [03-component-landscape](03-component-landscape.md)
 

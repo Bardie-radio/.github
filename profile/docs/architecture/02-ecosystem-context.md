@@ -1,6 +1,6 @@
 # Ecosystem Context
 
-<!-- mermaid-source: diagrams/ecosystem-context.mmd -->
+<!-- mermaid-source: profile/docs/architecture/diagrams/ecosystem-context.mmd -->
 ```mermaid
 C4Context
   title Bardie System Context

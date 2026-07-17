@@ -3,16 +3,16 @@ flowchart TB
     Kithara[Kithara]
     Plume[Plume UI]
     SrcMod[Source Modules]
-    AuthMod[Auth Adapters]
+    AuthMod[Auth providers]
   end
   subgraph external [External]
     Players[Network capable player]
-    IdP[OIDC]
-    OTel[OTel compatible consumer]
+    IdP["OIDC IdP v0.2"]
+    OTel[otel_collector]
   end
   Plume --> Kithara
   SrcMod -->|gRPC| Kithara
   AuthMod -->|gRPC| Kithara
   Players -->|/stream/slug| Kithara
-  Plume -.-> IdP
-  bardie --> OTel
+  Kithara -.->|callback v0.2| IdP
+  bardie -.->|OTLP| OTel

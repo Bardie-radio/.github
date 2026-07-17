@@ -1,6 +1,6 @@
 # Deployment
 
-<!-- mermaid-source: diagrams/deployment-compose.mmd -->
+<!-- mermaid-source: profile/docs/architecture/diagrams/deployment-compose.mmd -->
 ```mermaid
 flowchart TB
   subgraph edge [Edge]
@@ -9,26 +9,25 @@ flowchart TB
   subgraph apps [App stack MVP]
     Plume[bardie_plume]
     Kithara[bardie_kithara]
-    YT[bardie_youtube]
-    Auth["auth adapter (MVP)"]
+    YT["YouTube source name TBD"]
   end
-  subgraph observe [Observability]
-    OTel[otel-collector]
+  subgraph observe [Observability external]
+    OTel[otel_collector]
   end
   Internet --> P
   P --> Plume
   P --> Kithara
   Kithara --> YT
-  Kithara --> Auth
-  Plume --> OTel
-  Kithara --> OTel
-  YT --> OTel
-  Auth --> OTel
+  Plume -.->|OTLP| OTel
+  Kithara -.->|OTLP| OTel
+  YT -.->|OTLP| OTel
 ```
 
 MVP targets a self-hosted app stack behind an **edge reverse proxy**. Listeners and DJs hit one hostname; streams are path-routed, not port-per-stream. Bardie does **not** require a specific proxy product — only TLS termination and the path rules in [URI routing](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/uri-routing.md).
 
-Image and Compose **service names** use the `bardie_*` prefix once chosen. Module and repo names for the MVP auth and YouTube containers are **undecided** — diagram labels are roles, not final names. Short DNS aliases may differ from image names — document both when they differ.
+Image and Compose **service names** use the `bardie_*` prefix once chosen. YouTube (and later OIDC) module names are **undecided** — diagram labels are roles. Short DNS aliases may differ from image names — document both when they differ.
+
+**Local password auth is built into Kithara** for MVP — no separate auth app container until OIDC (v0.2).
 
 ## Deployment modes
 
@@ -44,19 +43,20 @@ Both modes use the same path map. Example configuration snippets for popular rev
 | Service | Role | Published (bundled edge) |
 |---------|------|--------------------------|
 | edge proxy | TLS + path routing | `:443` |
-| `bardie_plume` | Web UI / Plume (client module) | internal |
-| `bardie_kithara` | Core API + ICY stream server | internal |
+| `bardie_plume` | Web UI / Plume (optional client module) | internal |
+| `bardie_kithara` | Core API + ICY + local auth | internal |
 | YouTube source *(name TBD)* | Source module (MVP) | internal |
-| Auth adapter *(name TBD)* | Login+password adapter (MVP) | internal |
-| `otel_collector` | Telemetry (optional) | internal |
+| OIDC adapter *(v0.2, name TBD)* | External IdP bridge | internal when used |
+| `otel_collector` | **External** telemetry sink (e.g. Grafana Alloy) | operator-provided |
 
-**4 app containers** + edge (bundled or external) + optional collector.
+**MVP: 3 app containers** (Plume, Kithara, YouTube) + edge. Collector is not a Bardie app — wire OTLP to whatever you already run. Modules join with a **Compose env join secret**.
 
 ## Routing idea
 
-- Control plane and UI: Plume / Kithara REST behind the edge
+- Control plane and UI: Plume / Kithara REST (and OIDC callback on Kithara) behind the edge
 - Audio: `GET /stream/{slug}` → Kithara stream server (ICY)
 - No Icecast in MVP — Kithara serves the feed directly
+- gRPC stays **internal-only** (never publish `:5000` on the public edge)
 
 **Deep dive:** [kithara operations/deployment](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/operations/deployment.md) · [uri-routing](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/uri-routing.md)
 
