@@ -86,3 +86,43 @@ jobs:
                 body,
               });
             }
+
+      - name: Comment when previously failed parity is resolved
+        if: success() && github.event_name == 'pull_request'
+        uses: actions/github-script@v8
+        with:
+          script: |
+            const issue_number = context.payload.pull_request.number;
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              per_page: 100,
+            });
+            const failure = comments.find((c) =>
+              c.body.includes('<!-- mermaid-sync-comment -->')
+            );
+            if (!failure) return;
+
+            const resolved = comments
+              .filter((c) => c.body.includes('<!-- mermaid-sync-resolved -->'))
+              .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+            if (
+              resolved &&
+              new Date(resolved.created_at) >= new Date(failure.updated_at)
+            ) {
+              return;
+            }
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number,
+              body: [
+                '✅ Mermaid diagram parity **resolved**.',
+                '',
+                'Embeds and `.mmd` sources match on this commit.',
+                '',
+                '<!-- mermaid-sync-resolved -->',
+              ].join('\n'),
+            });
