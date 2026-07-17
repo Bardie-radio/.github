@@ -92,6 +92,31 @@ test("applySync use-md updates mmd file", () => {
   });
 });
 
+test("applySync use-md creates missing mmd file", () => {
+  withFixture("drift", (dir) => {
+    fs.rmSync(path.join(dir, "docs/diagrams/sample.mmd"));
+    const before = findConflicts(dir, ["docs/page.md"]);
+    assert.equal(before.length, 1);
+    assert.match(before[0].error || "", /not found/);
+
+    const result = applySync(dir, "docs/page.md", 0, "use-md");
+    assert.equal(result.changed, true);
+    const mmd = fs.readFileSync(path.join(dir, "docs/diagrams/sample.mmd"), "utf8");
+    assert.match(mmd, /flowchart LR/);
+    assert.deepEqual(findConflicts(dir, ["docs/page.md"]), []);
+  });
+});
+
+test("applySync use-mmd fails when mmd is missing", () => {
+  withFixture("drift", (dir) => {
+    fs.rmSync(path.join(dir, "docs/diagrams/sample.mmd"));
+    assert.throws(
+      () => applySync(dir, "docs/page.md", 0, "use-mmd"),
+      /cannot use-mmd/,
+    );
+  });
+});
+
 test("parseCommand extracts choice and path", () => {
   assert.deepEqual(parseCommand("/mermaid-sync use-mmd docs/a.md"), {
     choice: "use-mmd",
@@ -128,4 +153,18 @@ test("buildPrComment includes commands", () => {
   ]);
   assert.match(comment, /Mermaid diagram parity check failed/);
   assert.match(comment, /\/mermaid-sync use-mmd docs\/page\.md/);
+});
+
+test("buildPrComment only suggests use-md when mmd is missing", () => {
+  const comment = buildPrComment([
+    {
+      md_path: "docs/page.md",
+      mmd_path: "docs/diagrams/sample.mmd",
+      md_excerpt: "flowchart LR",
+      mmd_excerpt: "(missing)",
+      error: "Linked mermaid file not found: docs/diagrams/sample.mmd",
+    },
+  ]);
+  assert.match(comment, /\/mermaid-sync use-md docs\/page\.md/);
+  assert.doesNotMatch(comment, /\/mermaid-sync use-mmd/);
 });

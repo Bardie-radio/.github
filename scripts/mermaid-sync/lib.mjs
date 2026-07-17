@@ -173,6 +173,18 @@ export function buildPrComment(conflicts) {
 
   const blocks = conflicts.map((conflict) => {
     const { md_path, mmd_path, md_excerpt, mmd_excerpt } = conflict;
+    const missingMmd =
+      Boolean(conflict.error) || mmd_excerpt === "(missing)";
+    const commands = missingMmd
+      ? [
+          "`.mmd` is missing — create it from the embed (PR Conversation comment, or a submitted review):",
+          `- \`/mermaid-sync use-md ${md_path}\` — write the embed into \`${mmd_path}\``,
+        ]
+      : [
+          "Pick the canonical version (PR Conversation comment, or a submitted review):",
+          `- \`/mermaid-sync use-mmd ${md_path}\` — keep the \`.mmd\` file, update the embed`,
+          `- \`/mermaid-sync use-md ${md_path}\` — keep the embed, update the \`.mmd\` file`,
+        ];
     return [
       `### Mermaid parity failed`,
       "",
@@ -194,9 +206,7 @@ export function buildPrComment(conflicts) {
       "",
       "</details>",
       "",
-      "Pick the canonical version (PR Conversation comment, or a submitted review):",
-      `- \`/mermaid-sync use-mmd ${md_path}\` — keep the \`.mmd\` file, update the embed`,
-      `- \`/mermaid-sync use-md ${md_path}\` — keep the embed, update the \`.mmd\` file`,
+      ...commands,
     ].join("\n");
   });
 
@@ -237,6 +247,23 @@ export function applySync(repoRoot, mdPath, blockIndex, choice) {
   }
 
   const mmdAbsolute = path.join(repoRoot, pair.mmd_path);
+
+  // Missing `.mmd` is a conflict the checker reports; `use-md` must create it.
+  if (!fs.existsSync(mmdAbsolute)) {
+    if (choice === "use-md") {
+      const newBody = normalizeMermaid(pair.md_content);
+      fs.mkdirSync(path.dirname(mmdAbsolute), { recursive: true });
+      fs.writeFileSync(mmdAbsolute, `${newBody}\n`, "utf8");
+      return { changed: true, md_path: mdPath, mmd_path: pair.mmd_path, choice };
+    }
+    if (choice === "use-mmd") {
+      throw new Error(
+        `Linked mermaid file not found: ${pair.mmd_path} (cannot use-mmd; use use-md to create it)`,
+      );
+    }
+    throw new Error(`Unknown choice: ${choice}`);
+  }
+
   const enriched = pairWithMmdContent(pair, repoRoot);
 
   if (enriched.in_sync) {
