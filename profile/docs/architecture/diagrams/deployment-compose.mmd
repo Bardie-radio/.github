@@ -3,9 +3,10 @@ flowchart TB
     P[Reverse Proxy]
   end
   subgraph apps [App stack MVP]
-    Plume[bardie_plume]
-    Kithara[bardie_kithara]
-    YT["YouTube source name TBD"]
+    Plume[plume]
+    Kithara[kithara]
+    Magpie[magpie]
+    Bes[bes]
   end
   subgraph observe [Observability external]
     OTel[otel_collector]
@@ -13,7 +14,9 @@ flowchart TB
   Internet --> P
   P --> Plume
   P --> Kithara
-  Kithara --> YT
+  Kithara --> Magpie
+  Kithara --> Bes
   Plume -.->|OTLP| OTel
   Kithara -.->|OTLP| OTel
-  YT -.->|OTLP| OTel
+  Magpie -.->|OTLP| OTel
+  Bes -.->|OTLP| OTel

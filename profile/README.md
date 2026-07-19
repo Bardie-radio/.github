@@ -30,36 +30,38 @@ Kithara provides the core functionality through a REST API:
 - managing audio streams
 - controlling playback
 - orchestrating connected client, source, and auth modules
+- owning the user database and verifying user JWTs (no built-in login provider; modules issue/forward tokens)
 
-### 🖥️ Client Modules *(names TBD)*
+### 🖥️ Client Modules
 
 The user-facing surface is **modular** — not tied to a single web app. Each client module talks to Kithara's REST API and presents Bardie in a channel your community already uses.
 
 ```text
-├── Plume            → Web UI; list streams, control playback, optional in-browser listen
-├── Discord bot    → Play Bardie streams in voice channels; select and control sources
-└── Telegram bot   → Control streams remotely using Telegram bot
+├── Plume   → Web UI; user-aware (MVP)
+├── Cauda   → Telegram; user-aware (future)
+└── Beak    → Discord; static, guild-managed users (future)
 ```
 
 More client modules may appear as convenient channels are found. **Legacy players** (VLC, VRChat) are listen-only — they use `/stream/{slug}` but are not full client modules.
 
-### 🔐 Auth Adapter Modules *(names TBD)*
+### 🔐 Auth Adapter Modules
 
-Pluggable login and permission providers. Kithara orchestrates discovery and token validation; each adapter owns its login UI.
+Pluggable login providers. Auth modules **issue or forward JWTs** (and own refresh); Kithara orchestrates discovery, stores users, and **verifies** JWTs. Clients render login UI from discovery. Adapters do **not** host public login pages.
 
 ```text
-├── Login + password   → MVP local accounts (module and repo name undecided)
-└── OIDC               → Zitadel, Google, … (v0.2; name undecided)
+├── Bes     → Login + password (MVP)
+├── Argus   → OIDC — Zitadel, Google, … (v0.2)
+└── Hecate  → Passkeys (future)
 ```
 
-### ▶️ Source Modules *(names TBD)*
+### ▶️ Source Modules
 
 Modular providers responsible for supplying audio to Bardie streams.
 
 ```text
-├── YouTube / ytdl source  → Search and play music from online sources using ytdl
-├── Local stream source    → Re-broadcast direct audio input from your PC
-└── File source            → Play uploaded audio files
+├── Magpie    → YouTube / ytdl search and play (MVP)
+├── Starling  → Re-broadcast direct audio input from your PC (future)
+└── Catbird   → Play local / uploaded audio files (future)
 ```
 
 ---

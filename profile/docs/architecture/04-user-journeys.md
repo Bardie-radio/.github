@@ -26,12 +26,12 @@ sequenceDiagram
   participant DJ
   participant Plume
   participant Kithara
-  participant YT as YouTube Module
+  participant Magpie
 
   DJ->>Plume: /player/friday-jazz
   Plume->>Kithara: POST /api/streams/id/play
-  Kithara->>YT: start playback
-  YT-->>Kithara: audio ready
+  Kithara->>Magpie: start playback
+  Magpie-->>Kithara: audio ready
   Kithara-->>Plume: now playing
 ```
 
@@ -43,20 +43,20 @@ sequenceDiagram
   participant User
   participant Client
   participant Kithara
-  participant Provider as Auth_provider
+  participant Adapter as Auth_adapter
 
   User->>Client: Open UI or API client
   Client->>Kithara: GET /api/auth/discovery
   Kithara-->>Client: providers form_schema or redirect
   Client->>User: Render form or redirect to IdP
   User->>Client: Submit credentials or return from IdP
-  Client->>Kithara: POST /api/auth/authenticate or OIDC callback
-  Kithara->>Provider: Authenticate or ExchangeOidcCode
-  Provider-->>Kithara: subject + claims
-  Kithara-->>Client: JWT + refresh
+  Client->>Kithara: POST /api/auth/authenticate or /callback
+  Kithara->>Adapter: Authenticate opaque payload
+  Adapter-->>Kithara: allowed + roles + access JWT + refresh
+  Kithara-->>Client: access JWT + refresh from module
 ```
 
-Identity proof may use the built-in local provider or (v0.2+) an OIDC adapter. **Kithara always issues the JWT.** Deep dive: [kithara auth](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/auth.md).
+Identity proof uses auth modules (**Bes**, later **Argus** / **Hecate**) behind Kithara. Modules **issue or forward JWTs** (and own refresh); **Kithara verifies** them via JWKS. Deep dive: [kithara auth](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/auth.md).
 
 Source diagrams: [diagrams/](diagrams/)
 

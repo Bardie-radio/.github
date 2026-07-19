@@ -1,16 +1,16 @@
 flowchart TB
   subgraph client [Client modules]
-    Plume["Plume Web UI MVP"]
-    Discord["Discord bot future"]
-    Telegram["Telegram bot future"]
+    Plume["Plume Web UI user-aware MVP"]
+    Beak["Beak Discord static future"]
+    Cauda["Cauda Telegram user-aware future"]
   end
   subgraph listen [Listen]
     Players[Legacy players]
   end
   subgraph backend [Kithara backend]
     KitharaBox[Kithara]
-    src[source-modules]
-    auth["auth local built-in / OIDC future"]
+    src["Magpie Starling Catbird"]
+    auth["Bes Argus Hecate"]
     KitharaBox --- src
     KitharaBox --- auth
   end
@@ -18,9 +18,10 @@ flowchart TB
     OTel[otel_collector external]
   end
   Plume --> KitharaBox
-  Discord -.->|REST future| KitharaBox
-  Telegram -.->|REST future| KitharaBox
+  Beak -.->|REST future| KitharaBox
+  Cauda -.->|REST future| KitharaBox
   Players -->|ICY stream| KitharaBox
   backend --> OTel
   Plume --> OTel
   src --> OTel
+  auth --> OTel

@@ -2,10 +2,10 @@ sequenceDiagram
   participant DJ
   participant Plume
   participant Kithara
-  participant YT as YouTube Module
+  participant Magpie
 
   DJ->>Plume: /player/friday-jazz
   Plume->>Kithara: POST /api/streams/id/play
-  Kithara->>YT: start playback
-  YT-->>Kithara: audio ready
+  Kithara->>Magpie: start playback
+  Magpie-->>Kithara: audio ready
   Kithara-->>Plume: now playing

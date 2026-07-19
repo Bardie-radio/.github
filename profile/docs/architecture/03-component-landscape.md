@@ -4,17 +4,17 @@
 ```mermaid
 flowchart TB
   subgraph client [Client modules]
-    Plume["Plume Web UI MVP"]
-    Discord["Discord bot future"]
-    Telegram["Telegram bot future"]
+    Plume["Plume Web UI user-aware MVP"]
+    Beak["Beak Discord static future"]
+    Cauda["Cauda Telegram user-aware future"]
   end
   subgraph listen [Listen]
     Players[Legacy players]
   end
   subgraph backend [Kithara backend]
     KitharaBox[Kithara]
-    src[source-modules]
-    auth["auth local built-in / OIDC future"]
+    src["Magpie Starling Catbird"]
+    auth["Bes Argus Hecate"]
     KitharaBox --- src
     KitharaBox --- auth
   end
@@ -22,27 +22,28 @@ flowchart TB
     OTel[otel_collector external]
   end
   Plume --> KitharaBox
-  Discord -.->|REST future| KitharaBox
-  Telegram -.->|REST future| KitharaBox
+  Beak -.->|REST future| KitharaBox
+  Cauda -.->|REST future| KitharaBox
   Players -->|ICY stream| KitharaBox
   backend --> OTel
   Plume --> OTel
   src --> OTel
+  auth --> OTel
 ```
 
-**Kithara** plus its source modules (and later OIDC adapters) are one backend system. Client modules and players sit outside. Internals (Neck, Stream Server, Auth Orchestrator) stay in the kithara deep dive.
+**Kithara** plus its source and auth modules form the backend. Client modules and players sit outside. Internals (Neck, Stream Server, Auth Orchestrator) stay in the kithara deep dive. There is **no built-in auth** — Bes/Argus/Hecate are separate containers.
 
 ## Components
 
 | Type | Components | MVP |
 |------|------------|-----|
-| Core monolith | Kithara (incl. local password provider) | Yes |
-| Client module | Plume (web), Discord bot, Telegram bot | Plume optional but primary UI; bots future |
-| Source module | YouTube, Local input, File source | Yes (YouTube); Future (others) |
-| Auth | Local built-in; OIDC adapter (v0.2) | Yes (local); names TBD for OIDC |
+| Core | Kithara (users, JWT verify, streams) | Yes |
+| Client module | Plume (user-aware), Cauda (user-aware), Beak (static) | Plume optional but primary UI; bots future |
+| Source module | Magpie, Starling, Catbird | Yes (Magpie); Future (others) |
+| Auth adapter | Bes, Argus, Hecate | Yes (Bes); Argus v0.2; Hecate future |
 | Listener | Legacy players (ICY) | N/A |
 
-**Client modules** share Kithara's REST API. Discord/Telegram are control clients later — not ICY paste targets like VLC.
+**Client modules** share Kithara's REST API. **User-aware** clients carry end-user JWTs; **static** Beak uses a join secret for admin and per-guild managed-user credentials for day-to-day control — not ICY paste targets like VLC.
 
 No Icecast in MVP — Kithara serves ICY directly. OTel collector is **external**.
 
