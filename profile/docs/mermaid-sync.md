@@ -43,7 +43,7 @@ Multiple commands in one comment are applied in order. Multiple paired diagrams 
 
 ## Enable in a Bardie repo
 
-Add [`.github/workflows/mermaid-sync.yml`](../.github/workflows/mermaid-sync.yml) (or copy from `bardie-kithara`):
+Add [`.github/workflows/mermaid-sync.yml`](../.github/workflows/mermaid-sync.yml) (or copy from `kithara`):
 
 ```yaml
 name: Mermaid sync

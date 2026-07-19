@@ -1,0 +1,9 @@
+flowchart LR
+  Plume["Plume user-aware MVP"]
+  Cauda["Cauda user-aware future"]
+  Beak["Beak static future"]
+  Players[Legacy players]
+  Plume -->|REST| Kithara
+  Cauda -.->|REST| Kithara
+  Beak -.->|REST| Kithara
+  Players -->|ICY /stream| Kithara

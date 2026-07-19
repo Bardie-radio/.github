@@ -56,12 +56,12 @@ sequenceDiagram
   Kithara-->>Client: access JWT + refresh from module
 ```
 
-Identity proof uses auth modules (**Bes**, later **Argus** / **Hecate**) behind Kithara. Modules **issue or forward JWTs** (and own refresh); **Kithara verifies** them via JWKS. Deep dive: [kithara auth](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/auth.md).
+Identity proof uses auth modules (**Bes**, later **Argus** / **Hecate**) behind Kithara. Modules **issue or forward JWTs** (and own refresh); **Kithara verifies** them via JWKS. Deep dive: [kithara auth](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/auth.md).
 
 Source diagrams: [diagrams/](diagrams/)
 
-**Kithara journeys:** [domains/clients.md](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md) · [source sessions](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/source-instances.md) · [grpc-source-module](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/grpc-source-module.md)
+**Clients:** [06-client-modules](06-client-modules.md) · [kithara contract](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md) · [source sessions](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/source-instances.md) · [grpc-source-module](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/grpc-source-module.md)
 
-**Related:** [uri-routing](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [03-component-landscape](03-component-landscape.md)
+**Related:** [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [03-component-landscape](03-component-landscape.md)
 
 **Read next:** [05-deployment.md](05-deployment.md)
