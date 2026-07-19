@@ -252,8 +252,7 @@ export function applySync(repoRoot, mdPath, blockIndex, choice) {
   if (!fs.existsSync(mmdAbsolute)) {
     if (choice === "use-md") {
       const newBody = normalizeMermaid(pair.md_content);
-      fs.mkdirSync(path.dirname(mmdAbsolute), { recursive: true });
-      fs.writeFileSync(mmdAbsolute, `${newBody}\n`, "utf8");
+      writePairFiles(absoluteMd, mmdAbsolute, mdContent, blockIndex, newBody);
       return { changed: true, md_path: mdPath, mmd_path: pair.mmd_path, choice };
     }
     if (choice === "use-mmd") {
@@ -270,19 +269,28 @@ export function applySync(repoRoot, mdPath, blockIndex, choice) {
     return { changed: false, md_path: mdPath, mmd_path: pair.mmd_path, choice };
   }
 
-  if (choice === "use-mmd") {
-    const newBody = normalizeMermaid(enriched.mmd_content);
-    const updatedMd = replaceMermaidBlock(mdContent, blockIndex, newBody);
-    fs.writeFileSync(absoluteMd, updatedMd, "utf8");
-  } else if (choice === "use-md") {
-    const newBody = normalizeMermaid(enriched.md_content);
-    fs.mkdirSync(path.dirname(mmdAbsolute), { recursive: true });
-    fs.writeFileSync(mmdAbsolute, `${newBody}\n`, "utf8");
-  } else {
+  if (choice !== "use-mmd" && choice !== "use-md") {
     throw new Error(`Unknown choice: ${choice}`);
   }
 
+  // Always rewrite both sides with the chosen canonical body so normalization
+  // (CRLF / trailing whitespace) lands in the sync commit when it differs.
+  // Git still skips a path whose bytes are unchanged.
+  const newBody =
+    choice === "use-mmd"
+      ? normalizeMermaid(enriched.mmd_content)
+      : normalizeMermaid(enriched.md_content);
+  writePairFiles(absoluteMd, mmdAbsolute, mdContent, blockIndex, newBody);
+
   return { changed: true, md_path: mdPath, mmd_path: pair.mmd_path, choice };
+}
+
+/** Write normalized body into both the markdown embed and the `.mmd` file. */
+function writePairFiles(absoluteMd, mmdAbsolute, mdContent, blockIndex, newBody) {
+  const updatedMd = replaceMermaidBlock(mdContent, blockIndex, newBody);
+  fs.writeFileSync(absoluteMd, updatedMd, "utf8");
+  fs.mkdirSync(path.dirname(mmdAbsolute), { recursive: true });
+  fs.writeFileSync(mmdAbsolute, `${newBody}\n`, "utf8");
 }
 
 function replaceMermaidBlock(mdContent, blockIndex, newBody) {

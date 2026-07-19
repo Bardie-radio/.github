@@ -72,23 +72,39 @@ test("findConflicts detects drift", () => {
   });
 });
 
-test("applySync use-mmd updates markdown embed", () => {
+test("applySync use-mmd writes both embed and mmd", () => {
   withFixture("drift", (dir) => {
     const result = applySync(dir, "docs/page.md", 0, "use-mmd");
     assert.equal(result.changed, true);
-    const conflicts = findConflicts(dir, ["docs/page.md"]);
-    assert.deepEqual(conflicts, []);
+    const mmd = normalizeMermaid(
+      fs.readFileSync(path.join(dir, "docs/diagrams/sample.mmd"), "utf8"),
+    );
+    const pairs = parsePairsFromMarkdown(
+      fs.readFileSync(path.join(dir, "docs/page.md"), "utf8"),
+      "docs/page.md",
+      dir,
+    );
+    assert.equal(normalizeMermaid(pairs[0].md_content), mmd);
+    assert.match(mmd, /flowchart TB/);
+    assert.deepEqual(findConflicts(dir, ["docs/page.md"]), []);
   });
 });
 
-test("applySync use-md updates mmd file", () => {
+test("applySync use-md writes both embed and mmd", () => {
   withFixture("drift", (dir) => {
     const result = applySync(dir, "docs/page.md", 0, "use-md");
     assert.equal(result.changed, true);
-    const mmd = fs.readFileSync(path.join(dir, "docs/diagrams/sample.mmd"), "utf8");
+    const mmd = normalizeMermaid(
+      fs.readFileSync(path.join(dir, "docs/diagrams/sample.mmd"), "utf8"),
+    );
+    const pairs = parsePairsFromMarkdown(
+      fs.readFileSync(path.join(dir, "docs/page.md"), "utf8"),
+      "docs/page.md",
+      dir,
+    );
+    assert.equal(normalizeMermaid(pairs[0].md_content), mmd);
     assert.match(mmd, /flowchart LR/);
-    const conflicts = findConflicts(dir, ["docs/page.md"]);
-    assert.deepEqual(conflicts, []);
+    assert.deepEqual(findConflicts(dir, ["docs/page.md"]), []);
   });
 });
 

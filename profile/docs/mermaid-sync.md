@@ -27,9 +27,11 @@ When a paired embed and `.mmd` file differ:
 1. The **Mermaid sync** check fails (blocks merge).
 2. A bot comment lists each conflict with copy-paste commands.
 3. Reply on the PR **Conversation** tab (or submit a PR review comment) with your choice, for example:
-   - `/mermaid-sync use-mmd docs/architecture/02-ecosystem-context.md` — update the embed from the `.mmd` file
-   - `/mermaid-sync use-md docs/architecture/02-ecosystem-context.md` — update the `.mmd` from the embed
-4. A follow-up workflow commits to the PR branch and checks re-run.
+   - `/mermaid-sync use-mmd docs/architecture/02-ecosystem-context.md` — keep `.mmd`, rewrite both sides from it
+   - `/mermaid-sync use-md docs/architecture/02-ecosystem-context.md` — keep the embed, rewrite both sides from it
+4. A follow-up workflow commits to the PR branch and checks re-run. When the check goes green after a prior failure, the bot posts a separate **resolved** comment (the failure comment is left for history).
+
+Resolve always writes the chosen body into **both** the embed and the `.mmd` (normalized). Git only stages paths whose bytes actually change, so a side that was already identical may stay out of that commit.
 
 Multiple commands in one comment are applied in order. Multiple paired diagrams on one page use a block index:
 
