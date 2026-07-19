@@ -36,6 +36,7 @@ flowchart TB
 | 4 | [User journeys](04-user-journeys.md) | 3 min |
 | 5 | [Deployment](05-deployment.md) | 3 min — whole-stack process; per-container detail in each repo |
 | 6 | [Client modules](06-client-modules.md) | 2 min — planned clients + how they attach |
+| 7 | [Modules beyond Bardie](07-modules-beyond-bardie.md) | 2 min — **planned** shared auth/source **orchestrator libraries**; HTTP source orch; solo direct cache writes |
 
 
 ## Repositories

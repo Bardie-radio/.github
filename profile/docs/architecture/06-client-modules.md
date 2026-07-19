@@ -37,6 +37,6 @@ More clients may appear as useful channels show up. Auth modes and static tenanc
 
 gRPC stays internal (sources and auth adapters). Clients do not call those.
 
-**Related:** [03-component-landscape](03-component-landscape.md) · [05-deployment](05-deployment.md) · [02-ecosystem-context](02-ecosystem-context.md)
+**Related:** [03-component-landscape](03-component-landscape.md) · [05-deployment](05-deployment.md) · [02-ecosystem-context](02-ecosystem-context.md) · [07-modules-beyond-bardie](07-modules-beyond-bardie.md)
 
-**Read next:** [05-deployment.md](05-deployment.md)
+**Read next:** [07-modules-beyond-bardie.md](07-modules-beyond-bardie.md)

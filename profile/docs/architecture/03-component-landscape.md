@@ -49,6 +49,6 @@ No Icecast in MVP — Kithara serves ICY directly. OTel collector is **external*
 
 **Kithara detail:** [Internal structure](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/overview/02-internal-structure.md)
 
-**Related:** [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [06-client-modules](06-client-modules.md) · [02-ecosystem-context](02-ecosystem-context.md)
+**Related:** [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [06-client-modules](06-client-modules.md) · [07-modules-beyond-bardie](07-modules-beyond-bardie.md) · [02-ecosystem-context](02-ecosystem-context.md)
 
 **Read next:** [04-user-journeys.md](04-user-journeys.md)

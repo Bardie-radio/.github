@@ -1,0 +1,22 @@
+flowchart TB
+  subgraph libs [Shared libraries]
+    AuthOrchLib[Auth module orchestrator]
+    SrcOrchLib[Source module orchestrator]
+  end
+  subgraph modules [Module containers]
+    AuthMods[Bes Argus Hecate]
+    SrcMods[Magpie Starling Catbird]
+  end
+  subgraph hosts [Hosts]
+    Kithara[Kithara]
+    ExtAuth[External app]
+    HttpSrcOrch[HTTP source orchestrator]
+    Solo[Single source module]
+  end
+  Kithara --> AuthOrchLib
+  Kithara --> SrcOrchLib
+  ExtAuth --> AuthOrchLib
+  HttpSrcOrch --> SrcOrchLib
+  AuthOrchLib --> AuthMods
+  SrcOrchLib --> SrcMods
+  Solo -->|direct file writes via cache| SrcMods

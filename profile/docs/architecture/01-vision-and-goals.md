@@ -29,6 +29,7 @@ Bardie lets friends listen to music together **without** proprietary streaming s
 3. **Self-hosted** — you own the stack on your infrastructure
 4. **Player-friendly** — ICY HTTP URLs for VLC, VRChat, browsers
 5. **Observable** — every module emits OTLP; end-to-end traces
+6. **Reusable modules** *(planned)* — same auth/source **orchestrator libraries** Kithara uses; outside: embed auth orch, or HTTP source orch / solo module ([07-modules-beyond-bardie](07-modules-beyond-bardie.md))
 
 ## Non-goals (MVP)
 
@@ -38,6 +39,6 @@ Bardie lets friends listen to music together **without** proprietary streaming s
 
 **Deep dive:** [kithara architecture docs](https://github.com/Bardie-radio/kithara/tree/main/docs/architecture)
 
-**Related:** [05-deployment](05-deployment.md) · [glossary (kithara)](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/glossary.md)
+**Related:** [05-deployment](05-deployment.md) · [07-modules-beyond-bardie](07-modules-beyond-bardie.md) · [glossary (kithara)](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/glossary.md)
 
 **Read next:** [02-ecosystem-context.md](02-ecosystem-context.md)
