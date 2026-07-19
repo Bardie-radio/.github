@@ -2,14 +2,14 @@ sequenceDiagram
   participant User
   participant Client
   participant Kithara
-  participant Provider as Auth_provider
+  participant Adapter as Auth_adapter
 
   User->>Client: Open UI or API client
   Client->>Kithara: GET /api/auth/discovery
   Kithara-->>Client: providers form_schema or redirect
   Client->>User: Render form or redirect to IdP
   User->>Client: Submit credentials or return from IdP
-  Client->>Kithara: POST /api/auth/authenticate or OIDC callback
-  Kithara->>Provider: Authenticate or ExchangeOidcCode
-  Provider-->>Kithara: subject + claims
-  Kithara-->>Client: JWT + refresh
+  Client->>Kithara: POST /api/auth/authenticate or /callback
+  Kithara->>Adapter: Authenticate opaque payload
+  Adapter-->>Kithara: allowed + roles + access JWT + refresh
+  Kithara-->>Client: access JWT + refresh from module

@@ -3,7 +3,7 @@ flowchart TB
     Kithara[Kithara]
     Plume[Plume UI]
     SrcMod[Source Modules]
-    AuthMod[Auth providers]
+    AuthMod[Auth adapters]
   end
   subgraph external [External]
     Players[Network capable player]
@@ -14,5 +14,5 @@ flowchart TB
   SrcMod -->|gRPC| Kithara
   AuthMod -->|gRPC| Kithara
   Players -->|/stream/slug| Kithara
-  Kithara -.->|callback v0.2| IdP
+  AuthMod -.->|Argus OIDC| IdP
   bardie -.->|OTLP| OTel

@@ -7,7 +7,7 @@ flowchart TB
     Kithara[Kithara]
     Plume[Plume UI]
     SrcMod[Source Modules]
-    AuthMod[Auth providers]
+    AuthMod[Auth adapters]
   end
   subgraph external [External]
     Players[Network capable player]
@@ -18,7 +18,7 @@ flowchart TB
   SrcMod -->|gRPC| Kithara
   AuthMod -->|gRPC| Kithara
   Players -->|/stream/slug| Kithara
-  Kithara -.->|callback v0.2| IdP
+  AuthMod -.->|Argus OIDC| IdP
   bardie -.->|OTLP| OTel
 ```
 
@@ -42,7 +42,14 @@ flowchart TB
 | Repo | Role |
 |------|------|
 | [bardie-kithara](https://github.com/Bardie-radio/bardie-kithara) | Core backend |
-| [bardie-plume](https://github.com/Bardie-radio/bardie-plume) | Web UI |
-| — | Login+password auth adapter (MVP) — module and repo name undecided |
+| [bardie-plume](https://github.com/Bardie-radio/bardie-plume) | Web UI (Plume) |
+| [bardie-bes](https://github.com/Bardie-radio/bardie-bes) | Login+password auth (Bes, MVP) — WIP |
+| [bardie-magpie](https://github.com/Bardie-radio/bardie-magpie) | YouTube / ytdl source (Magpie, MVP) — WIP |
+| [bardie-beak](https://github.com/Bardie-radio/bardie-beak) | Discord bot (Beak) — planned |
+| [bardie-cauda](https://github.com/Bardie-radio/bardie-cauda) | Telegram bot (Cauda) — planned |
+| [bardie-starling](https://github.com/Bardie-radio/bardie-starling) | External stream source (Starling) — planned |
+| [bardie-catbird](https://github.com/Bardie-radio/bardie-catbird) | File source (Catbird) — planned |
+| [bardie-argus](https://github.com/Bardie-radio/bardie-argus) | OIDC auth (Argus, v0.2) — planned |
+| [bardie-hecate](https://github.com/Bardie-radio/bardie-hecate) | Passkeys auth (Hecate) — planned |
 
 **Read next:** [01-vision-and-goals.md](01-vision-and-goals.md)
