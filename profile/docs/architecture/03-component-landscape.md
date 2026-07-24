@@ -43,12 +43,12 @@ flowchart TB
 | Auth adapter | Bes, Argus, Hecate | Yes (Bes); Argus v0.2; Hecate future |
 | Listener | Legacy players (ICY) | N/A |
 
-**Client modules** share Kithara's REST API. **User-aware** clients carry end-user JWTs; **static** Beak uses a join secret for admin and per-guild managed-user credentials for day-to-day control — not ICY paste targets like VLC.
+**Client modules** share Kithara's REST API. **User-aware** clients carry end-user JWTs; **static** Beak uses a join secret for admin and per-guild managed-user credentials for day-to-day control — not ICY paste targets like VLC. Catalog: [06-client-modules](06-client-modules.md).
 
 No Icecast in MVP — Kithara serves ICY directly. OTel collector is **external**.
 
-**Kithara detail:** [Internal structure](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/overview/02-internal-structure.md) · [Client modules](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/domains/clients.md)
+**Kithara detail:** [Internal structure](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/overview/02-internal-structure.md) · [Client modules (kithara)](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md)
 
-**Related:** [uri-routing](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [02-ecosystem-context](02-ecosystem-context.md)
+**Related:** [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [02-ecosystem-context](02-ecosystem-context.md) · [06-client-modules](06-client-modules.md)
 
 **Read next:** [04-user-journeys.md](04-user-journeys.md)

@@ -16,8 +16,8 @@ flowchart TB
     OTel[otel_collector]
   end
   Internet --> P
-  P --> Plume
-  P --> Kithara
+  P -->|"/ /control/* /player/*"| Plume
+  P -->|"/api/* /stream/*"| Kithara
   Kithara --> Magpie
   Kithara --> Bes
   Plume -.->|OTLP| OTel
@@ -26,7 +26,7 @@ flowchart TB
   Bes -.->|OTLP| OTel
 ```
 
-MVP targets a self-hosted app stack behind an **edge reverse proxy**. Listeners and DJs hit one hostname; streams are path-routed, not port-per-stream. Bardie does **not** require a specific proxy product — only TLS termination and the path rules in [URI routing](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/uri-routing.md).
+MVP targets a self-hosted app stack behind an **edge reverse proxy**. Listeners and DJs hit one hostname; streams are path-routed, not port-per-stream. Bardie does **not** require a specific proxy product — only TLS termination and the path rules in [URI routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md).
 
 Image and Compose **service names** match the lowercase codename (`kithara`, `plume`, `magpie`, `bes`, …). Short DNS aliases may differ from image names — document both when they differ.
 
@@ -55,15 +55,23 @@ Both modes use the same path map. Example configuration snippets for popular rev
 
 **MVP: 4 app containers** (Plume, Kithara, Magpie, Bes) + edge. Collector is not a Bardie app — wire OTLP to whatever you already run. Modules authenticate with a **join secret** (`BARDIE_JOIN_SECRETS`).
 
-## Routing idea
+## Path map
 
-- Control plane and UI: Plume / Kithara REST (and OIDC callback on Kithara) behind the edge
-- Audio: `GET /stream/{slug}` → Kithara stream server (ICY)
-- No Icecast in MVP — Kithara serves the feed directly
+| Path | Target | Notes |
+|------|--------|-------|
+| `/` | Plume | Home / Struna list (optional if Plume is omitted) |
+| `/control/*` | Plume | Remote-control desk — `/control/{slug}` |
+| `/player/*` | Plume | Listen / player surface — `/player/{slug}` |
+| `/api/*` | Kithara | REST (auth, playback, guest exchange, …) |
+| `/stream/{slug}` | Kithara | ICY audio |
+| *(no `/listen`)* | — | Use `/player/{slug}` for UI listen; `/stream/{slug}` for ICY |
+
+- OIDC callback stays on Kithara (`/api` …) behind the edge
 - gRPC stays **internal-only** (never publish `:5000` on the public edge)
+- Without Plume, `/`, `/control/*`, and `/player/*` simply have no UI target at the edge
 
-**Deep dive:** [kithara operations/deployment](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/operations/deployment.md) · [uri-routing](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/interfaces/uri-routing.md)
+**Deep dive:** [kithara operations/deployment](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/operations/deployment.md) · [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md)
 
-**Related:** [observability naming](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/operations/observability.md) · [04-user-journeys](04-user-journeys.md)
+**Related:** [observability naming](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/operations/observability.md) · [06-client-modules](06-client-modules.md) · [04-user-journeys](04-user-journeys.md)
 
 **Read next:** [README.md](README.md)

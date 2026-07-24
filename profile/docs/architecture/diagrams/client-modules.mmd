@@ -1,0 +1,10 @@
+flowchart LR
+  subgraph clients [Client modules]
+    Plume[Plume]
+    Beak[Beak]
+    Cauda[Cauda]
+  end
+  Kithara[Kithara REST]
+  Plume -->|user-aware| Kithara
+  Beak -.->|static planned| Kithara
+  Cauda -.->|user-aware planned| Kithara
