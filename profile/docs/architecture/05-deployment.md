@@ -47,7 +47,7 @@ Both modes use the same path map. Example configuration snippets for popular rev
 |---------|------|--------------------------|
 | edge proxy | TLS + path routing | `:443` |
 | `plume` | Web UI / Plume (optional client module) | internal |
-| `kithara` | Core API + ICY + auth orchestrator + user DB | internal |
+| `kithara` | Core API + ICY + auth harness + user DB | internal |
 | `magpie` | Magpie — YouTube / ytdl source (MVP) | internal |
 | `bes` | Bes — login+password auth (MVP) | internal |
 | `argus` | Argus — OIDC (v0.2) | internal when used |

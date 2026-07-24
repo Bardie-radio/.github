@@ -31,7 +31,7 @@ flowchart TB
   auth --> OTel
 ```
 
-**Kithara** plus its source and auth modules form the backend. Client modules and players sit outside. Internals (Neck, Stream Server, Auth Orchestrator) stay in the kithara deep dive. There is **no built-in auth** — Bes/Argus/Hecate are separate containers.
+**Kithara** plus its source and auth modules form the backend. Client modules and players sit outside. Internals (Neck, Stream Server, Auth Harness) stay in the kithara deep dive. There is **no built-in auth** — Bes/Argus/Hecate are separate containers.
 
 ## Components
 
