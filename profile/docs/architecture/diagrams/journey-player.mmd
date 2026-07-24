@@ -1,0 +1,9 @@
+sequenceDiagram
+  participant Listener
+  participant Plume
+  participant Kithara
+
+  Listener->>Plume: /player/lofi
+  Plume->>Kithara: poll now-playing / queue
+  Kithara-->>Plume: current track
+  Note over Listener,Plume: optional opt-in audio via /stream/lofi

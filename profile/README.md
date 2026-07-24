@@ -18,7 +18,7 @@ Bardie makes listening to music with your friends easy — without proprietary s
 
 ## 🏗️ Architecture
 
-**[Architecture documentation](docs/architecture/README.md)** — ecosystem overview and whole-stack design. ADRs live in [bardie-kithara](https://github.com/Bardie-radio/bardie-kithara/tree/main/docs/architecture/adrs).
+**[Architecture documentation](docs/architecture/README.md)** — ecosystem overview and whole-stack design. ADRs live in [kithara](https://github.com/Bardie-radio/kithara/tree/main/docs/architecture/adrs).
 
 Bardie is built around a modular architecture. **Kithara** is the core; everything else plugs in as a module chosen for how your community listens and communicates.
 

@@ -24,7 +24,7 @@ flowchart TB
 
 5–10 minute orientation for the Bardie ecosystem. Every page opens with a diagram.
 
-**Deep dive:** [bardie-kithara/docs/architecture](https://github.com/Bardie-radio/bardie-kithara/tree/main/docs/architecture)
+**Deep dive:** [kithara/docs/architecture](https://github.com/Bardie-radio/kithara/tree/main/docs/architecture)
 
 ## Pages
 
@@ -35,21 +35,22 @@ flowchart TB
 | 3 | [Component landscape](03-component-landscape.md) | 3 min |
 | 4 | [User journeys](04-user-journeys.md) | 3 min |
 | 5 | [Deployment](05-deployment.md) | 3 min — whole-stack process; per-container detail in each repo |
+| 6 | [Client modules](06-client-modules.md) | 2 min — catalog only; contracts in kithara |
 
 
 ## Repositories
 
 | Repo | Role |
 |------|------|
-| [bardie-kithara](https://github.com/Bardie-radio/bardie-kithara) | Core backend |
-| [bardie-plume](https://github.com/Bardie-radio/bardie-plume) | Web UI (Plume) |
-| [bardie-bes](https://github.com/Bardie-radio/bardie-bes) | Login+password auth (Bes, MVP) — WIP |
-| [bardie-magpie](https://github.com/Bardie-radio/bardie-magpie) | YouTube / ytdl source (Magpie, MVP) — WIP |
-| [bardie-beak](https://github.com/Bardie-radio/bardie-beak) | Discord bot (Beak) — planned |
-| [bardie-cauda](https://github.com/Bardie-radio/bardie-cauda) | Telegram bot (Cauda) — planned |
-| [bardie-starling](https://github.com/Bardie-radio/bardie-starling) | External stream source (Starling) — planned |
-| [bardie-catbird](https://github.com/Bardie-radio/bardie-catbird) | File source (Catbird) — planned |
-| [bardie-argus](https://github.com/Bardie-radio/bardie-argus) | OIDC auth (Argus, v0.2) — planned |
-| [bardie-hecate](https://github.com/Bardie-radio/bardie-hecate) | Passkeys auth (Hecate) — planned |
+| [kithara](https://github.com/Bardie-radio/kithara) | Core backend |
+| [plume](https://github.com/Bardie-radio/plume) | Web UI (Plume) |
+| [bes](https://github.com/Bardie-radio/bes) | Login+password auth (Bes, MVP) — WIP |
+| [magpie](https://github.com/Bardie-radio/magpie) | YouTube / ytdl source (Magpie, MVP) — WIP |
+| [beak](https://github.com/Bardie-radio/beak) | Discord bot (Beak) — planned |
+| [cauda](https://github.com/Bardie-radio/cauda) | Telegram bot (Cauda) — planned |
+| [starling](https://github.com/Bardie-radio/starling) | External stream source (Starling) — planned |
+| [catbird](https://github.com/Bardie-radio/catbird) | File source (Catbird) — planned |
+| [argus](https://github.com/Bardie-radio/argus) | OIDC auth (Argus, v0.2) — planned |
+| [hecate](https://github.com/Bardie-radio/hecate) | Passkeys auth (Hecate) — planned |
 
 **Read next:** [01-vision-and-goals.md](01-vision-and-goals.md)
