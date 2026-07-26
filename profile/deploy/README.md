@@ -39,7 +39,7 @@ Wire your proxy with [edge/nginx.external.conf.example](edge/nginx.external.conf
 | magpie | `ghcr.io/bardie-radio/magpie:<tag>` |
 | bes | `ghcr.io/bardie-radio/bes:<tag>` |
 
-Tag via `IMAGE_TAG` in `.env` (`latest` or a SemVer). Release notes: [version-check](../docs/version-check.md).
+Tag via `IMAGE_TAG` in `.env` (`latest`, `dev`, or a SemVer). Release notes: [version-check](../docs/version-check.md).
 
 ## First boot (AUTH-INVITE)
 

@@ -75,7 +75,7 @@ Set these in `deploy/.env` (from [`.env.example`](../../deploy/.env.example)):
 
 | Knob | Purpose |
 |------|---------|
-| `IMAGE_TAG` | GHCR tag (`latest` or SemVer) |
+| `IMAGE_TAG` | GHCR tag (`latest`, `dev`, or SemVer) |
 | `PUBLIC_BASE_URL` | Public origin for Plume stream URLs (must be the edge URL browsers use) |
 | `JOIN_SECRET_*` | Per-module join secrets → Kithara `BARDIE_JOIN_SECRETS` + each module’s `BARDIE_JOIN_SECRET` |
 | `POSTGRES_USER` / `PASSWORD` / `DB` | Shared by the `db` service and Kithara (Jellyfin-style; no raw EF connection string) |
