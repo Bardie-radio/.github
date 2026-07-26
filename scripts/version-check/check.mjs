@@ -39,7 +39,7 @@ function printHelp() {
 
 Compares <Version> in PATH on HEAD vs the PR base (git show REF:PATH).
 Fails unless HEAD has a valid SemVer that is strictly greater than base
-(or base lacks the file — bootstrap: HEAD SemVer only).
+(or base lacks the file / `<Version>` — bootstrap: HEAD SemVer only).
 
 Environment: GITHUB_BASE_SHA (preferred) or GITHUB_BASE_REF when --base-ref is omitted.`);
 }

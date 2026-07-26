@@ -106,7 +106,8 @@ export function isStrictlyGreater(head, base) {
 /**
  * Evaluate whether HEAD is an allowed version bump vs the PR base.
  *
- * Bootstrap: when the base file is missing, HEAD only needs a valid SemVer.
+ * Bootstrap: when the base file is missing, or exists without a `<Version>`,
+ * HEAD only needs a valid SemVer.
  *
  * @param {{
  *   headContent: string | null,
@@ -161,11 +162,12 @@ export function evaluateVersionBump(input) {
 
   const baseVersion = extractVersion(input.baseContent, pattern);
   if (!baseVersion) {
+    // First landing of <Version> in an existing props file.
     return {
-      ok: false,
+      ok: true,
       headVersion,
       baseVersion: null,
-      message: `Version check failed: base ${fileLabel} has no <Version>. Bump <Version> in ${fileLabel} on this PR.`,
+      message: `Version check OK (bootstrap): base ${fileLabel} has no <Version>; HEAD ${headVersion} is valid SemVer.`,
     };
   }
 

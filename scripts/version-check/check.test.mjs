@@ -87,6 +87,27 @@ test("evaluateVersionBump bootstrap when base file missing", () => {
   assert.match(result.message, /bootstrap/);
 });
 
+test("evaluateVersionBump bootstrap when base file has no Version", () => {
+  const result = evaluateVersionBump({
+    headContent: `<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Version>0.1.0</Version>
+  </PropertyGroup>
+</Project>`,
+    baseContent: `<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+</Project>`,
+  });
+  assert.equal(result.ok, true);
+  assert.equal(result.headVersion, "0.1.0");
+  assert.equal(result.baseVersion, null);
+  assert.match(result.message, /bootstrap/);
+  assert.match(result.message, /has no <Version>/);
+});
+
 test("evaluateVersionBump fails on invalid HEAD SemVer", () => {
   const result = evaluateVersionBump({
     headContent: "<Version>1.0</Version>",

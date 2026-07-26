@@ -1,6 +1,6 @@
 # Version bump CI gate
 
-Lib (and later service) repos that publish versioned artifacts must bump
+Lib and service repos that publish versioned artifacts must bump
 `<Version>` on every PR to `main`. This org reusable workflow enforces that
 gate so releases stay intentional — **no auto-bump**.
 
@@ -11,8 +11,9 @@ gate so releases stay intentional — **no auto-bump**.
 2. On a pull request, HEAD must contain a **valid SemVer** (`MAJOR.MINOR.PATCH`,
    optional pre-release) that is **strictly greater** than the same value on
    the PR base.
-3. **Bootstrap:** if the base commit has no `Directory.Build.props`, HEAD only
-   needs a valid SemVer (first landing of the file).
+3. **Bootstrap:** if the base commit has no `Directory.Build.props`, or the file
+   exists without a `<Version>`, HEAD only needs a valid SemVer (first landing
+   of the version property).
 
 CI fails with a clear message when the version is missing, unchanged, not
 SemVer, or not greater than base — typically:
@@ -60,5 +61,20 @@ Scripts: [`scripts/version-check/`](../scripts/version-check/).
 
 1. Bump `<Version>` in `Directory.Build.props`.
 2. Open PR — **Version check** + build CI must pass.
-3. Merge to `main` — publish workflow packs and pushes to [nuget.org](https://www.nuget.org).
+3. Merge to `main`, then manually run **Publish NuGet** (`workflow_dispatch`) —
+   packs and pushes to [nuget.org](https://www.nuget.org).
 4. Consumers bump the matching `PackageVersion` in their `Directory.Packages.props`.
+
+## Release loop (services / container images)
+
+Applies to MVP app repos (`kithara`, `plume`, `magpie`, `bes`):
+
+1. Bump `<Version>` in `Directory.Build.props`.
+2. Open PR — **Version check** + **CI** (`docker build`, no push) must pass.
+3. Merge to `main`, then manually run **Publish image** (`workflow_dispatch`).
+4. Image tags on GHCR:
+   - `ghcr.io/bardie-radio/<codename>:<Version>`
+   - `ghcr.io/bardie-radio/<codename>:latest`
+5. **First push:** if the org default for packages is private, open the new
+   package on GitHub → Package settings → Change visibility → **Public**
+   (one-time per image). After that, hosts can `docker pull` without login.
