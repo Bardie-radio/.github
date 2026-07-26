@@ -26,6 +26,7 @@ coverage/
 # Editors and OS
 .idea/
 .vscode/
+.VSCodeCounter/
 *.swp
 *.swo
 *~
