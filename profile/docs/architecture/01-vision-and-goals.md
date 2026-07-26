@@ -36,8 +36,8 @@ Bardie lets friends listen to music together **without** proprietary streaming s
 - Bundled Icecast
 - Public anonymous DJ (no public control plane)
 
-**Deep dive:** [bardie-kithara architecture docs](https://github.com/Bardie-radio/bardie-kithara/tree/main/docs/architecture)
+**Deep dive:** [kithara architecture docs](https://github.com/Bardie-radio/kithara/tree/main/docs/architecture)
 
-**Related:** [05-deployment](05-deployment.md) · [glossary (kithara)](https://github.com/Bardie-radio/bardie-kithara/blob/main/docs/architecture/glossary.md)
+**Related:** [05-deployment](05-deployment.md) · [glossary (kithara)](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/glossary.md)
 
 **Read next:** [02-ecosystem-context.md](02-ecosystem-context.md)
