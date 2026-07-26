@@ -22,13 +22,14 @@ SemVer, or not greater than base — typically:
 
 ## Enable in a Bardie repo
 
-Add `.github/workflows/version-check.yml`:
+Add `.github/workflows/version-check.yml` (gate PRs into **`main`** only):
 
 ```yaml
 name: Version check
 
 on:
   pull_request:
+    branches: [main]
 
 jobs:
   check:
@@ -69,12 +70,24 @@ Scripts: [`scripts/version-check/`](../scripts/version-check/).
 
 Applies to MVP app repos (`kithara`, `plume`, `magpie`, `bes`):
 
-1. Bump `<Version>` in `Directory.Build.props`.
-2. Open PR — **Version check** + **CI** (`docker build`, no push) must pass.
-3. Merge to `main`, then manually run **Publish image** (`workflow_dispatch`).
-4. Image tags on GHCR:
+### `dev` (automatic)
+
+1. Merge to long-lived **`dev`** (no version-bump gate on PRs into `dev`).
+2. Push to `dev` runs **Publish image** automatically.
+3. GHCR tags:
    - `ghcr.io/bardie-radio/<codename>:<Version>`
+   - `ghcr.io/bardie-radio/<codename>:dev`
+   - **not** `:latest`
+
+### `main` (manual release)
+
+1. Bump `<Version>` in `Directory.Build.props` (PR into **`main`** — version check applies).
+2. Version check + CI (`docker build`, no push) must pass; merge.
+3. Run **Publish image** (`workflow_dispatch` from **`main`** only).
+4. GHCR tags (same SemVer, channel flips to release):
+   - `ghcr.io/bardie-radio/<codename>:<Version>` (overwrites the prior `dev` build for that SemVer)
    - `ghcr.io/bardie-radio/<codename>:latest`
-5. **First push:** if the org default for packages is private, open the new
+5. Operators: `IMAGE_TAG=latest` (release) or `IMAGE_TAG=dev` (integration).
+6. **First push:** if the org default for packages is private, open the new
    package on GitHub → Package settings → Change visibility → **Public**
    (one-time per image). After that, hosts can `docker pull` without login.
