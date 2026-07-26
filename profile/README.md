@@ -4,7 +4,7 @@
 
 Bardie makes listening to music with your friends easy — without proprietary subscription services like Spotify, manual synchronization rituals, or Discord screen sharing compressing your music to hell and back.
 
-🚧 **Heavily Work in Progress.** No working builds yet
+🚧 **Heavily Work in Progress** — MVP quartet images publish to GHCR; self-host via the [reference Compose](deploy/).
 
 ---
 
@@ -68,4 +68,8 @@ Modular providers responsible for supplying audio to Bardie streams.
 
 ## 🚀 Self-hosting
 
-Whole-stack process: [Deployment](docs/architecture/05-deployment.md). Per-container detail lives in each repo.
+1. Copy [`deploy/`](deploy/) (or clone this repo) → `cp deploy/.env.example deploy/.env` → edit secrets.
+2. `docker compose -f deploy/compose.yml up -d` — nginx on `:80`, apps from `ghcr.io/bardie-radio/<codename>`.
+3. Details, external-edge mode, and config table: [Deployment](docs/architecture/05-deployment.md).
+
+Per-container env/ops live in each service repo (start with [Kithara configuration](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/operations/configuration.md)).
