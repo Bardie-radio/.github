@@ -31,7 +31,7 @@ flowchart TB
   auth --> OTel
 ```
 
-**Kithara** plus its source and auth modules form the backend. Client modules and players sit outside. Internals (Neck, Stream Server, Auth Orchestrator) stay in the kithara deep dive. There is **no built-in auth** — Bes/Argus/Hecate are separate containers.
+**Kithara** plus its source and auth modules form the backend. Client modules and players sit outside. Internals (Neck, Stream Server, Auth Harness) stay in the kithara deep dive. There is **no built-in auth** — Bes/Argus/Hecate are separate containers.
 
 ## Components
 
@@ -43,7 +43,7 @@ flowchart TB
 | Auth adapter | Bes, Argus, Hecate | Yes (Bes); Argus v0.2; Hecate future |
 | Listener | Legacy players (ICY) | N/A |
 
-**Client modules** share Kithara's REST API. Catalog and attachment: [06-client-modules](06-client-modules.md). Contract (user-aware vs static): [kithara clients](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md).
+**Client modules** share Kithara's REST API. **User-aware** clients carry end-user JWTs; **static** Beak uses a join secret for admin and per-guild managed-user credentials for day-to-day control — not ICY paste targets like VLC. Catalog: [06-client-modules](06-client-modules.md). Contract detail: [kithara clients](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md).
 
 No Icecast in MVP — Kithara serves ICY directly. OTel collector is **external**.
 

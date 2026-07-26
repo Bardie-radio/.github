@@ -3,40 +3,33 @@
 <!-- mermaid-source: profile/docs/architecture/diagrams/client-modules.mmd -->
 ```mermaid
 flowchart LR
-  Plume["Plume user-aware MVP"]
-  Cauda["Cauda user-aware future"]
-  Beak["Beak static future"]
-  Players[Legacy players]
-  Plume -->|REST| Kithara
-  Cauda -.->|REST| Kithara
-  Beak -.->|REST| Kithara
-  Players -->|ICY /stream| Kithara
+  subgraph clients [Client modules]
+    Plume[Plume]
+    Beak[Beak]
+    Cauda[Cauda]
+  end
+  Kithara[Kithara REST]
+  Plume -->|user-aware| Kithara
+  Beak -.->|static planned| Kithara
+  Cauda -.->|user-aware planned| Kithara
 ```
 
-Bardie’s **user-facing surface is modular**. Each **client module** is a separate deployable that talks to Kithara’s REST API. Legacy players are listen-only — not client modules.
+Catalog of **client modules** — separate deployables that present Bardie on a channel and drive Strunas through Kithara’s REST API. Contracts (auth modes, Register, credentials) live in [kithara domains/clients](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md); this page only lists what’s planned and where the repos are.
 
-**Core contract** (what Kithara requires): [kithara domains/clients](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md).
+| Module | Repo | Auth mode | Status | Edge / role |
+|--------|------|-----------|--------|-------------|
+| **Plume** | [plume](https://github.com/Bardie-radio/plume) | user-aware | MVP (primary web UI) | `/`, `/control/*`, `/player/*` |
+| **Beak** | [beak](https://github.com/Bardie-radio/beak) | static | planned | Discord bot |
+| **Cauda** | [cauda](https://github.com/Bardie-radio/cauda) | user-aware | planned | Telegram bot |
 
-## Planned clients
+**Plume paths (locked):** `/control/{slug}` is the remote-control desk; `/player/{slug}` is the listen / player surface. There is no `/listen` route. Legacy players (VLC, VRChat) hit `/stream/{slug}` only — they are not client modules.
 
-| Module | Channel | Auth mode | Status | Capabilities (sketch) | Docs |
-|--------|---------|-----------|--------|----------------------|------|
-| **Plume** | Web | user-aware | MVP (optional) | `/`, `/player/{slug}`; discovery login; control + optional listen | [architecture](https://github.com/Bardie-radio/plume/tree/main/docs/architecture) |
-| **Cauda** | Telegram | user-aware | Planned | Remote Struna control from chats | [planned role](https://github.com/Bardie-radio/cauda/blob/main/docs/architecture/01-planned-role.md) |
-| **Beak** | Discord | static | Planned | VC → Struna; **one managed user per guild** | [planned role](https://github.com/Bardie-radio/beak/blob/main/docs/architecture/01-planned-role.md) |
+Module deep dives:
 
-More clients may appear as useful channels show up. Auth modes and static tenancy rules are defined in the [kithara contract](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md) — not reinvented per bot.
+- [Plume architecture](https://github.com/Bardie-radio/plume/tree/main/docs/architecture)
+- [Beak architecture](https://github.com/Bardie-radio/beak/tree/main/docs/architecture) *(planned)*
+- [Cauda architecture](https://github.com/Bardie-radio/cauda/tree/main/docs/architecture) *(planned)*
 
-## Attaching a client to the stack
-
-| Step | Where |
-|------|--------|
-| Join secret in `BARDIE_JOIN_SECRETS` + container on the Compose network | [05-deployment](05-deployment.md) |
-| Register as `user-aware` or `static`; call `/api` with the right credentials | [kithara clients](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md) |
-| Edge paths for web UI (`/`, `/player/*`) vs API/stream | [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md) |
-
-gRPC stays internal (sources and auth adapters). Clients do not call those.
-
-**Related:** [03-component-landscape](03-component-landscape.md) · [05-deployment](05-deployment.md) · [02-ecosystem-context](02-ecosystem-context.md) · [07-modules-beyond-bardie](07-modules-beyond-bardie.md)
+**Related:** [kithara clients](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md) · [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [03-component-landscape](03-component-landscape.md) · [05-deployment](05-deployment.md) · [07-modules-beyond-bardie](07-modules-beyond-bardie.md)
 
 **Read next:** [07-modules-beyond-bardie.md](07-modules-beyond-bardie.md)

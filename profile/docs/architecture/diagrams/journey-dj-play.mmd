@@ -4,7 +4,7 @@ sequenceDiagram
   participant Kithara
   participant Magpie
 
-  DJ->>Plume: /player/friday-jazz
+  DJ->>Plume: /control/friday-jazz
   Plume->>Kithara: POST /api/streams/id/play
   Kithara->>Magpie: start playback
   Magpie-->>Kithara: audio ready
