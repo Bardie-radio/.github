@@ -1,0 +1,183 @@
+# Bardie MVP reference stack — bundled nginx edge + GHCR images.
+#
+#   cp .env.example .env   # edit secrets + PUBLIC_BASE_URL
+#   docker compose up -d
+#
+# Image ENV defaults TLS/FIFO/FFmpeg paths — Compose only mounts those volumes.
+# Blob storage driver + path are required on Kithara (not image-only defaults).
+# Shared FIFO volume (`bardie-audio` → /audio) must be on Kithara and Magpie.
+# OTel: leave unset (SDK no-op). To enable, uncomment OTEL_* + extra_hosts on each app.
+# Docs: ../docs/architecture/05-deployment.md
+
+name: bardie
+
+# Shared by Kithara + Plume (edge-facing). Drop both merges for no-proxy.
+x-forwarded-headers-env: &forwarded-headers-env
+  # Traefik → nginx → app; single edge: set FORWARD_LIMIT=1 in .env
+  BARDIE_FORWARDED_HEADERS_FORWARD_LIMIT: ${BARDIE_FORWARDED_HEADERS_FORWARD_LIMIT:-2}
+  BARDIE_FORWARDED_HEADERS_CLEAR_KNOWN: ${BARDIE_FORWARDED_HEADERS_CLEAR_KNOWN:-true}
+
+# Shared by db + Kithara (same role/password/db).
+x-postgres-env: &postgres-env
+  POSTGRES_USER: ${POSTGRES_USER:-kithara}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+  POSTGRES_DB: ${POSTGRES_DB:-kithara}
+
+# Shared by all modules that dial Kithara gRPC.
+x-kithara-grpc-env: &kithara-grpc-env
+  KITHARA_GRPC_ADDRESS: https://kithara:5000
+
+services:
+  edge:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./edge/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      kithara:
+        condition: service_healthy
+      plume:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      <<: *postgres-env
+    volumes:
+      - bardie-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
+    restart: unless-stopped
+
+  kithara:
+    image: ghcr.io/bardie-radio/kithara:${IMAGE_TAG:-latest}
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      <<: [*forwarded-headers-env, *postgres-env]
+      BARDIE_JOIN_SECRETS: '{"bes":"${JOIN_SECRET_BES}","magpie":"${JOIN_SECRET_MAGPIE}","plume":"${JOIN_SECRET_PLUME}"}'
+      POSTGRES_HOST: db
+      POSTGRES_PORT: ${POSTGRES_PORT:-5432}
+      BARDIE_STORAGE_DRIVER: ${BARDIE_STORAGE_DRIVER:-local}
+      BARDIE_STORAGE_PATH: ${BARDIE_STORAGE_PATH:-/data/blobs}
+      # Optional path overrides (image defaults: /data/mtls, /audio, /usr/lib):
+      # BARDIE_GRPC_TLS_DATA_PATH: /data/mtls
+      # BARDIE_STRUNA_FIFO_PATH: /audio   # if changed, remount Magpie to the same path
+      # BARDIE_FFMPEG_ROOT: /usr/lib
+      # Optional OTel — uncomment to export (leave omitted = no export):
+      # OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      # OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-grpc}
+    volumes:
+      - bardie-kithara-data:/data
+      # Scratch FIFOs — share with Magpie. Mount target must match BARDIE_STRUNA_FIFO_PATH (default /audio).
+      - bardie-audio:/audio
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/health/live || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 25s
+    restart: unless-stopped
+
+  bes:
+    image: ghcr.io/bardie-radio/bes:${IMAGE_TAG:-latest}
+    depends_on:
+      kithara:
+        condition: service_healthy
+    environment:
+      <<: *kithara-grpc-env
+      BARDIE_JOIN_SECRET: ${JOIN_SECRET_BES}
+      BARDIE_GRPC_ADVERTISE_ADDRESS: https://bes:5001
+      # Optional overrides (image defaults):
+      # MODULE_TLS_DATA_PATH: /data/mtls
+      # MODULE_WORK_GRPC_PORT: 5001
+      # Optional OTel — uncomment to export (leave omitted = no export):
+      # OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      # OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-grpc}
+    volumes:
+      - bardie-bes-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 20s
+    restart: unless-stopped
+
+  magpie:
+    image: ghcr.io/bardie-radio/magpie:${IMAGE_TAG:-latest}
+    depends_on:
+      kithara:
+        condition: service_healthy
+    environment:
+      <<: *kithara-grpc-env
+      BARDIE_JOIN_SECRET: ${JOIN_SECRET_MAGPIE}
+      BARDIE_GRPC_ADVERTISE_ADDRESS: https://magpie:5001
+      # Optional overrides (image defaults):
+      # MODULE_TLS_DATA_PATH: /data/mtls
+      # MODULE_WORK_GRPC_PORT: 5001
+      # MAGPIE_FFMPEG_ROOT: /usr/lib
+      # No FIFO path env — Magpie opens audio_endpoint from Kithara; mount must match Kithara's root.
+      # Optional OTel — uncomment to export (leave omitted = no export):
+      # OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      # OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-grpc}
+    volumes:
+      - bardie-magpie-data:/data
+      # Same volume + path as Kithara (default /audio). Change both if BARDIE_STRUNA_FIFO_PATH changes.
+      - bardie-audio:/audio
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 25s
+    restart: unless-stopped
+
+  plume:
+    image: ghcr.io/bardie-radio/plume:${IMAGE_TAG:-latest}
+    depends_on:
+      kithara:
+        condition: service_healthy
+      bes:
+        condition: service_healthy
+    environment:
+      <<: [*forwarded-headers-env, *kithara-grpc-env]
+      ASPNETCORE_ENVIRONMENT: Production
+      Kithara__BaseUrl: http://kithara:8080
+      # Must be the public edge origin (browsers / <audio> /stream).
+      Kithara__PublicBaseUrl: ${PUBLIC_BASE_URL:-http://localhost}
+      BARDIE_JOIN_SECRET: ${JOIN_SECRET_PLUME}
+      BARDIE_GRPC_ADVERTISE_ADDRESS: https://plume:5001
+      # Optional overrides (image defaults):
+      # BARDIE_DP_KEYS_PATH: /app/dp-keys
+      # MODULE_TLS_DATA_PATH: /data/mtls
+      # MODULE_WORK_GRPC_PORT: 5001
+      # Optional OTel — uncomment to export (leave omitted = no export):
+      # OTEL_EXPORTER_OTLP_ENDPOINT: ${OTEL_EXPORTER_OTLP_ENDPOINT}
+      # OTEL_EXPORTER_OTLP_PROTOCOL: ${OTEL_EXPORTER_OTLP_PROTOCOL:-grpc}
+    volumes:
+      - bardie-dp-keys:/app/dp-keys
+      - bardie-plume-data:/data
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8080/healthz || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+      start_period: 25s
+    restart: unless-stopped
+
+volumes:
+  bardie-pg:
+  bardie-kithara-data:
+  bardie-bes-data:
+  bardie-magpie-data:
+  bardie-audio:
+  bardie-dp-keys:
+  bardie-plume-data:
