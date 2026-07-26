@@ -1,0 +1,68 @@
+name: Reusable version check
+
+on:
+  workflow_call:
+    inputs:
+      file:
+        description: Repo-root-relative path containing <Version>
+        type: string
+        default: Directory.Build.props
+      ci_ref:
+        description: Ref of Bardie-radio/.github to load scripts from
+        type: string
+        default: main
+      pattern:
+        description: Optional regex with a capture group for the version string
+        type: string
+        default: ""
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout caller repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout shared CI scripts
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ github.repository_owner }}/.github
+          ref: ${{ inputs.ci_ref }}
+          path: bardie-ci
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Select version-check scripts
+        id: scripts
+        run: |
+          # When this workflow runs in the .github repo itself, prefer the PR
+          # checkout so checker fixes can self-test before landing on main.
+          if [ -f scripts/version-check/check.mjs ]; then
+            echo "root=." >> "$GITHUB_OUTPUT"
+          else
+            echo "root=bardie-ci" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run version bump check
+        env:
+          VERSION_FILE: ${{ inputs.file }}
+          VERSION_PATTERN: ${{ inputs.pattern }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "${BASE_SHA}" ]; then
+            echo "Version check failed: pull_request base SHA is unavailable."
+            echo "This reusable workflow is intended for pull_request events."
+            exit 2
+          fi
+          args=(--file "${VERSION_FILE}" --base-ref "${BASE_SHA}")
+          if [ -n "${VERSION_PATTERN}" ]; then
+            args+=(--pattern "${VERSION_PATTERN}")
+          fi
+          node "${{ steps.scripts.outputs.root }}/scripts/version-check/check.mjs" "${args[@]}"
