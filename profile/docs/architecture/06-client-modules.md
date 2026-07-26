@@ -30,6 +30,6 @@ Module deep dives:
 - [Beak architecture](https://github.com/Bardie-radio/beak/tree/main/docs/architecture) *(planned)*
 - [Cauda architecture](https://github.com/Bardie-radio/cauda/tree/main/docs/architecture) *(planned)*
 
-**Related:** [kithara clients](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md) · [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [03-component-landscape](03-component-landscape.md) · [05-deployment](05-deployment.md)
+**Related:** [kithara clients](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/domains/clients.md) · [uri-routing](https://github.com/Bardie-radio/kithara/blob/main/docs/architecture/interfaces/uri-routing.md) · [03-component-landscape](03-component-landscape.md) · [05-deployment](05-deployment.md) · [07-modules-beyond-bardie](07-modules-beyond-bardie.md)
 
-**Read next:** [05-deployment.md](05-deployment.md)
+**Read next:** [07-modules-beyond-bardie.md](07-modules-beyond-bardie.md)
